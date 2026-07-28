@@ -10,7 +10,7 @@ import BottomNav from './components/BottomNav'
 import './styles/global.css'
 
 function AppRoutes() {
-  const { user, loading } = useAuth()
+  const { user, loading, isPremium } = useAuth()
 
   if (loading) {
     return (
@@ -29,7 +29,17 @@ function AppRoutes() {
   }
 
   return (
-    <>
+    <div className="app-layout">
+      <header className="topbar">
+        <div className="topbar-logo">
+          <div className="topbar-logo-text">
+            <span className="topbar-logo-plataforma">PLATAFORMA</span>
+            <span className="topbar-logo-holos">HOLOS</span>
+          </div>
+        </div>
+        {isPremium && <span className="badge-premium">👑 Premium</span>}
+      </header>
+
       <Routes>
         <Route path="/" element={<ReflexaoDiaria />} />
         <Route path="/checkin" element={<Checkin />} />
@@ -39,7 +49,7 @@ function AppRoutes() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <BottomNav />
-    </>
+    </div>
   )
 }
 
