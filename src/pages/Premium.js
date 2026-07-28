@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 const BENEFICIOS = [
@@ -9,7 +10,31 @@ const BENEFICIOS = [
 ]
 
 export default function Premium() {
-  const { isPremium } = useAuth()
+  const { user, isPremium } = useAuth()
+  const [carregando, setCarregando] = useState(false)
+  const [erro, setErro] = useState('')
+
+  async function assinar() {
+    setErro('')
+    setCarregando(true)
+    try {
+      const resp = await fetch('/api/criar-assinatura', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, email: user.email }),
+      })
+      const data = await resp.json()
+      if (!resp.ok || !data.init_point) {
+        setErro('Não foi possível iniciar o checkout. Tente novamente.')
+        setCarregando(false)
+        return
+      }
+      window.location.href = data.init_point
+    } catch (e) {
+      setErro('Erro de conexão. Tente novamente.')
+      setCarregando(false)
+    }
+  }
 
   return (
     <div className="page-content" style={{ paddingTop: '24px', textAlign: 'center' }}>
@@ -36,9 +61,10 @@ export default function Premium() {
             <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>ou R$ 299,90/ano (equivale a R$ 24,99/mês)</p>
           </div>
 
-          {/* Checkout real entra na Fase 3, junto com Stripe/Mercado Pago */}
-          <button className="btn btn-gold" disabled style={{ opacity: 0.6, cursor: 'not-allowed' }}>
-            Checkout em breve
+          {erro && <p style={{ color: 'var(--danger)', fontSize: '13px', marginBottom: '10px' }}>{erro}</p>}
+
+          <button className="btn btn-gold" onClick={assinar} disabled={carregando}>
+            {carregando ? 'Preparando checkout...' : '👑 Quero ser Premium'}
           </button>
         </>
       )}
