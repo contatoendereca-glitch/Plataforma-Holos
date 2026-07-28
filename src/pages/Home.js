@@ -46,13 +46,39 @@ export default function Home() {
 
   const dorAtual = dores.find(d => d.id === (perfil?.dor_atual_id || dores[0]?.id))
 
+  const ACESSO_RAPIDO = [
+    { path: '/', emoji: '🌅', label: 'Reflexão do Dia', desc: 'Comece o dia com intenção' },
+    { path: '/checkin', emoji: '✅', label: 'Check-in Diário', desc: 'Suas 3 vitórias' },
+    { path: '/premium', emoji: '👑', label: 'Premium', desc: 'Plano e benefícios', premium: !isPremium },
+    { path: '/perfil', emoji: '👤', label: 'Perfil', desc: 'Sua trajetória e dados' },
+  ]
+
   return (
     <div className="page-content" style={{ paddingTop: '24px' }}>
       <h2 className="page-title">Olá 👋</h2>
       <p className="page-subtitle">Sua jornada personalizada começa aqui.</p>
 
+      <p className="section-label">Acesso rápido</p>
+      <div className="home-grid" style={{ marginBottom: '20px' }}>
+        {ACESSO_RAPIDO.map(item => (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className="card"
+            style={{ textAlign: 'left', cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit', color: 'inherit' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '22px' }}>{item.emoji}</span>
+              {item.premium && <span className="badge-premium">PRO</span>}
+            </div>
+            <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>{item.label}</p>
+            <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{item.desc}</p>
+          </button>
+        ))}
+      </div>
+
+      <p className="section-label">Sua dor de hoje</p>
       <div className="card">
-        <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>Dor atual</p>
         <select
           className="input"
           style={{ marginBottom: 0 }}
@@ -63,29 +89,32 @@ export default function Home() {
         </select>
       </div>
 
-      {instancias.map((inst, idx) => {
-        // Regra: Alma (2ª instância) é sempre grátis; Corpo e Espírito exigem Premium
+      {instancias.map((inst) => {
+        // Regra: Alma é sempre grátis; Corpo e Espírito exigem Premium
         const liberado = inst.nome === 'Alma' || isPremium
         const conteudos = conteudosPorInstancia[inst.id] || []
 
+        if (!liberado) {
+          return (
+            <div key={inst.id} className="locked-card">
+              <p style={{ fontWeight: 600, marginBottom: '8px' }}>{inst.nome}</p>
+              <span style={{ fontSize: '20px', display: 'block', marginBottom: '4px' }}>🔒</span>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Disponível no Premium</span>
+            </div>
+          )
+        }
+
         return (
-          <div key={inst.id} className={`card ${!liberado ? 'card-locked' : ''}`} style={{ position: 'relative', minHeight: liberado ? 'auto' : '110px' }}>
+          <div key={inst.id} className="card">
             <p style={{ fontWeight: 600, marginBottom: '8px' }}>{inst.nome}</p>
-            {liberado ? (
-              conteudos.length === 0 ? (
-                <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Nenhum conteúdo ainda para "{dorAtual?.nome}" em {inst.nome}.</p>
-              ) : (
-                conteudos.map(c => (
-                  <a key={c.id} href={c.url_externa} target="_blank" rel="noreferrer" style={{ display: 'block', color: 'var(--text)', textDecoration: 'none', fontSize: '14px', padding: '8px 0', borderBottom: '1px solid rgba(201,154,61,0.1)' }}>
-                    {c.formato === 'Audio' ? '🎧' : c.formato === 'Video' ? '🎬' : '📖'} {c.titulo}
-                  </a>
-                ))
-              )
+            {conteudos.length === 0 ? (
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Nenhum conteúdo ainda para "{dorAtual?.nome}" em {inst.nome}.</p>
             ) : (
-              <div className="lock-overlay">
-                <span style={{ fontSize: '20px' }}>🔒</span>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Disponível no Premium</span>
-              </div>
+              conteudos.map(c => (
+                <a key={c.id} href={c.url_externa} target="_blank" rel="noreferrer" style={{ display: 'block', color: 'var(--text-main)', textDecoration: 'none', fontSize: '14px', padding: '8px 0', borderBottom: '1px solid rgba(201,154,61,0.1)' }}>
+                  {c.formato === 'Audio' ? '🎧' : c.formato === 'Video' ? '🎬' : '📖'} {c.titulo}
+                </a>
+              ))
             )}
           </div>
         )
