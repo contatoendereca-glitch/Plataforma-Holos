@@ -12,7 +12,7 @@ export default function BottomNav() {
   return (
     <nav className="bottom-nav">
       {ITENS.map(item => (
-        <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => isActive ? 'active' : ''}>
+        <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <span style={{ fontSize: '16px' }}>{item.icon}</span>
           <span>{item.label}</span>
         </NavLink>
