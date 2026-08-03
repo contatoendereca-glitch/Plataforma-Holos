@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 export default function PremiumGate({ titulo, descricao }) {
   return (
     <div className="locked-card">
-      <label>🔒 {titulo}</label>
-      <p className="sub" style={{ marginBottom: 12 }}>{descricao}</p>
-      <Link className="btn" to="/premium">
+      <p style={{ fontWeight: 600, marginBottom: 4 }}>🔒 {titulo}</p>
+      <p className="page-subtitle" style={{ marginBottom: 12 }}>{descricao}</p>
+      <Link className="btn btn-gold" to="/premium">
         Assinar Premium
       </Link>
     </div>
