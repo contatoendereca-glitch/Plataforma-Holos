@@ -1,99 +1,71 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../context/AuthContext'
-
-const DIMENSOES = [
-  { key: 'nota_corpo', label: 'Corpo', desc: 'Como está seu corpo hoje?' },
-  { key: 'nota_alma', label: 'Alma', desc: 'Como está sua alma hoje?' },
-  { key: 'nota_espirito', label: 'Espírito', desc: 'Como está seu espírito hoje?' },
-]
+// ATENÇÃO — assume colunas corpo, alma, espirito (texto livre) na tabela checkins.
+// O documento diz "1 registro por dia" mas isso não está travado por constraint
+// de banco ainda — se quiser travar de verdade, dá pra adicionar um unique
+// composto em (usuario_id, date(criado_em)) num patch futuro.
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+import { usePerfil } from "../context/PerfilContext";
 
 export default function Checkin() {
-  const { user } = useAuth()
-  const navigate = useNavigate()
-  const hoje = new Date().toISOString().slice(0, 10)
+  const { perfil } = usePerfil();
+  const navigate = useNavigate();
 
-  const [notas, setNotas] = useState({ nota_corpo: null, nota_alma: null, nota_espirito: null })
-  const [jaFeito, setJaFeito] = useState(false)
-  const [salvando, setSalvando] = useState(false)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => { carregar() }, [user])
-
-  async function carregar() {
-    if (!user) return
-    const { data } = await supabase
-      .from('checkins')
-      .select('*')
-      .eq('perfil_id', user.id)
-      .eq('data', hoje)
-      .maybeSingle()
-
-    if (data) {
-      setNotas({ nota_corpo: data.nota_corpo, nota_alma: data.nota_alma, nota_espirito: data.nota_espirito })
-      setJaFeito(true)
-    }
-    setLoading(false)
-  }
+  const [corpo, setCorpo] = useState("");
+  const [alma, setAlma] = useState("");
+  const [espirito, setEspirito] = useState("");
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState(null);
 
   async function salvar() {
-    if (!notas.nota_corpo || !notas.nota_alma || !notas.nota_espirito) return
-    setSalvando(true)
-    const { error } = await supabase.from('checkins').upsert({
-      perfil_id: user.id,
-      data: hoje,
-      ...notas,
-    }, { onConflict: 'perfil_id,data' })
-
-    if (!error) setJaFeito(true)
-    setSalvando(false)
+    if (!corpo || !alma || !espirito) {
+      setErro("Preencha os 3 campos antes de registrar.");
+      return;
+    }
+    setSalvando(true);
+    setErro(null);
+    const { error } = await supabase.from("checkins").insert({
+      usuario_id: perfil.id,
+      corpo,
+      alma,
+      espirito,
+    });
+    setSalvando(false);
+    if (error) {
+      setErro("Não foi possível salvar. Tente novamente.");
+      return;
+    }
+    navigate("/calendario");
   }
 
-  if (loading) return <div className="loading-screen"><div className="spinner" /></div>
-
   return (
-    <div className="page-content" style={{ paddingTop: '24px' }}>
-      <h2 className="page-title">Check-in Diário</h2>
-      <p className="page-subtitle">Hoje é um novo dia para cuidar de você.</p>
+    <div>
+      <div className="topbar">
+        <span onClick={() => navigate(-1)}>‹ Voltar</span>
+        <span onClick={() => navigate("/")}>⌂ Início</span>
+      </div>
 
-      {DIMENSOES.map(d => (
-        <div className="card" key={d.key}>
-          <p style={{ fontWeight: 600, marginBottom: '4px' }}>{d.label}</p>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px' }}>{d.desc}</p>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {[1, 2, 3, 4, 5].map(n => (
-              <button
-                key={n}
-                onClick={() => setNotas(prev => ({ ...prev, [d.key]: n }))}
-                style={{
-                  flex: 1, height: '40px', borderRadius: '10px', cursor: 'pointer',
-                  border: notas[d.key] === n ? '1px solid var(--gold)' : '1px solid rgba(201,154,61,0.2)',
-                  background: notas[d.key] === n ? 'rgba(201,154,61,0.15)' : '#0A1013',
-                  color: notas[d.key] === n ? 'var(--gold)' : 'var(--text-muted)',
-                  fontWeight: 600,
-                }}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
+      <h1>Check-in diário</h1>
+      <p className="sub">como você está agora, nos 3 eixos</p>
 
-      {jaFeito ? (
-        <div className="card" style={{ textAlign: 'center', borderColor: 'var(--success)' }}>
-          <p style={{ color: 'var(--success)', fontWeight: 600 }}>✓ Check-in de hoje salvo</p>
-        </div>
-      ) : (
-        <button className="btn btn-gold" disabled={salvando} onClick={salvar} style={{ marginTop: '8px' }}>
-          {salvando ? 'Salvando...' : 'Salvar check-in'}
-        </button>
-      )}
+      {erro && <p style={{ color: "#e07b6c", fontSize: 13 }}>{erro}</p>}
 
-      <button className="btn btn-outline" style={{ marginTop: '10px' }} onClick={() => navigate('/home')}>
-        Ver minha Home
+      <div className="card">
+        <label>Corpo</label>
+        <input value={corpo} onChange={(e) => setCorpo(e.target.value)} placeholder="ex: cansado, com energia, tenso..." />
+      </div>
+      <div className="card">
+        <label>Alma</label>
+        <input value={alma} onChange={(e) => setAlma(e.target.value)} placeholder="ex: ansioso, em paz, confuso..." />
+      </div>
+      <div className="card">
+        <label>Espírito</label>
+        <input value={espirito} onChange={(e) => setEspirito(e.target.value)} placeholder="ex: conectado, distante, em busca..." />
+      </div>
+
+      <button className="btn" disabled={salvando} onClick={salvar}>
+        {salvando ? "Salvando..." : "Registrar check-in"}
       </button>
     </div>
-  )
+  );
 }

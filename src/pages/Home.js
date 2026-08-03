@@ -1,130 +1,98 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../context/AuthContext'
+// ATENÇÃO — colunas assumidas em reflexoes_diarias: texto, audio_url, data_publicacao.
+// Confira contra o schema real (holos_fase1_schema.sql) e ajuste os nomes se forem
+// diferentes — sem isso a busca da reflexão de hoje não vai encontrar nada.
+// A reflexão é conteúdo que só o Admin cadastra (não existe tela de cadastro do
+// usuário aqui) — até o Painel Admin existir, insira as reflexões direto no
+// SQL Editor do Supabase, uma por dia, com a data em data_publicacao.
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 export default function Home() {
-  const { perfil, isPremium } = useAuth()
-  const navigate = useNavigate()
-  const [dores, setDores] = useState([])
-  const [instancias, setInstancias] = useState([])
-  const [conteudosPorInstancia, setConteudosPorInstancia] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [reflexao, setReflexao] = useState(null);
+  const [carregando, setCarregando] = useState(true);
 
-  useEffect(() => { carregar() }, [perfil])
-
-  async function carregar() {
-    const { data: dds } = await supabase.from('dores').select('*').eq('ativo', true).order('ordem')
-    const { data: ins } = await supabase.from('instancias').select('*').order('ordem')
-    setDores(dds || [])
-    setInstancias(ins || [])
-
-    const dorId = perfil?.dor_atual_id || dds?.[0]?.id
-    if (dorId) {
-      const { data: cont } = await supabase
-        .from('conteudos')
-        .select('*')
-        .eq('dor_id', dorId)
-        .eq('status', 'Aprovado')
-
-      const agrupado = {}
-      ;(cont || []).forEach(c => {
-        if (!agrupado[c.instancia_id]) agrupado[c.instancia_id] = []
-        agrupado[c.instancia_id].push(c)
-      })
-      setConteudosPorInstancia(agrupado)
+  useEffect(() => {
+    async function carregarReflexao() {
+      const hoje = new Date().toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from("reflexoes_diarias")
+        .select("id, texto, audio_url")
+        .eq("data_publicacao", hoje)
+        .maybeSingle();
+      if (!error) setReflexao(data);
+      setCarregando(false);
     }
-    setLoading(false)
+    carregarReflexao();
+  }, []);
+
+  function compartilhar() {
+    if (!reflexao) return;
+    const texto = encodeURIComponent(reflexao.texto);
+    window.open(`https://wa.me/?text=${texto}`, "_blank");
   }
-
-  async function selecionarDor(dorId) {
-    await supabase.from('perfis').update({ dor_atual_id: dorId }).eq('id', perfil.id)
-    carregar()
-  }
-
-  if (loading) return <div className="loading-screen"><div className="spinner" /></div>
-
-  const dorAtual = dores.find(d => d.id === (perfil?.dor_atual_id || dores[0]?.id))
-
-  const ACESSO_RAPIDO = [
-    { path: '/', emoji: '🌅', label: 'Reflexão do Dia', desc: 'Comece o dia com intenção' },
-    { path: '/checkin', emoji: '✅', label: 'Check-in Diário', desc: 'Suas 3 vitórias' },
-    { path: '/premium', emoji: '👑', label: 'Premium', desc: 'Plano e benefícios', premium: !isPremium },
-    { path: '/perfil', emoji: '👤', label: 'Perfil', desc: 'Sua trajetória e dados' },
-  ]
 
   return (
-    <div className="page-content" style={{ paddingTop: '24px' }}>
-      <h2 className="page-title">Olá 👋</h2>
-      <p className="page-subtitle">Sua jornada personalizada começa aqui.</p>
-
-      <p className="section-label">Acesso rápido</p>
-      <div className="home-grid" style={{ marginBottom: '20px' }}>
-        {ACESSO_RAPIDO.map(item => (
-          <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className="card"
-            style={{ textAlign: 'left', cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit', color: 'inherit' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <span style={{ fontSize: '22px' }}>{item.emoji}</span>
-              {item.premium && <span className="badge-premium">PRO</span>}
-            </div>
-            <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>{item.label}</p>
-            <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{item.desc}</p>
-          </button>
-        ))}
+    <div>
+      <div className="topbar">
+        <span>&nbsp;</span>
+        <span>⌂ Início</span>
       </div>
 
-      <p className="section-label">Sua dor de hoje</p>
-      <div className="card">
-        <select
-          className="input"
-          style={{ marginBottom: 0 }}
-          value={perfil?.dor_atual_id || ''}
-          onChange={e => selecionarDor(e.target.value)}
-        >
-          {dores.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}
-        </select>
-      </div>
+      <h1>Reflexão do dia</h1>
+      <p className="sub">enviada pela equipe Holos</p>
 
-      {instancias.map((inst) => {
-        // Regra: Alma é sempre grátis; Corpo e Espírito exigem Premium
-        const liberado = inst.nome === 'Alma' || isPremium
-        const conteudos = conteudosPorInstancia[inst.id] || []
-
-        if (!liberado) {
-          return (
-            <div key={inst.id} className="locked-card">
-              <p style={{ fontWeight: 600, marginBottom: '8px' }}>{inst.nome}</p>
-              <span style={{ fontSize: '20px', display: 'block', marginBottom: '4px' }}>🔒</span>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Disponível no Premium</span>
-            </div>
-          )
-        }
-
-        return (
-          <div key={inst.id} className="card">
-            <p style={{ fontWeight: 600, marginBottom: '8px' }}>{inst.nome}</p>
-            {conteudos.length === 0 ? (
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Nenhum conteúdo ainda para "{dorAtual?.nome}" em {inst.nome}.</p>
-            ) : (
-              conteudos.map(c => (
-                <a key={c.id} href={c.url_externa} target="_blank" rel="noreferrer" style={{ display: 'block', color: 'var(--text-main)', textDecoration: 'none', fontSize: '14px', padding: '8px 0', borderBottom: '1px solid rgba(201,154,61,0.1)' }}>
-                  {c.formato === 'Audio' ? '🎧' : c.formato === 'Video' ? '🎬' : '📖'} {c.titulo}
-                </a>
-              ))
+      {carregando && <p className="sub">Carregando...</p>}
+      {!carregando && !reflexao && (
+        <p className="sub">Nenhuma reflexão publicada hoje ainda.</p>
+      )}
+      {reflexao && (
+        <div className="card card-gold" style={{ marginBottom: 18 }}>
+          <p>{reflexao.texto}</p>
+          <div className="btn-row">
+            <button className="btn btn-outline" onClick={compartilhar}>
+              Compartilhar
+            </button>
+            {reflexao.audio_url && (
+              <button
+                className="btn btn-outline"
+                onClick={() => window.open(reflexao.audio_url, "_blank")}
+              >
+                Ouvir
+              </button>
             )}
           </div>
-        )
-      })}
-
-      {!isPremium && (
-        <button className="btn btn-gold" style={{ marginTop: '8px' }} onClick={() => navigate('/premium')}>
-          👑 Desbloquear tudo com Premium
-        </button>
+        </div>
       )}
+
+      <Link className="homeblock" to="/registro">
+        <div>
+          <b>Registro rápido</b>
+          <span className="desc">Gratidão · Diário Holos</span>
+        </div>
+        <span>›</span>
+      </Link>
+      <Link className="homeblock" to="/dor">
+        <div>
+          <b>Eu Hoje</b>
+          <span className="desc">escolha uma dor pra cuidar</span>
+        </div>
+        <span>›</span>
+      </Link>
+      <Link className="homeblock" to="/calendario">
+        <div>
+          <b>Calendário</b>
+          <span className="desc">veja tudo que você registrou</span>
+        </div>
+        <span>›</span>
+      </Link>
+      <Link className="homeblock" to="/store">
+        <div>
+          <b>Holos Store</b>
+          <span className="desc">curadoria de produtos parceiros</span>
+        </div>
+        <span>›</span>
+      </Link>
     </div>
-  )
+  );
 }
