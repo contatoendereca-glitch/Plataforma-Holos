@@ -4,6 +4,8 @@ import ReflexaoDiaria from './pages/ReflexaoDiaria'
 import Checkin from './pages/Checkin'
 import Home from './pages/Home'
 import Dor from './pages/Dor'
+import RegistroRapido from './pages/RegistroRapido'
+import Calendario from './pages/Calendario'
 import DorDetalhe from './pages/DorDetalhe'
 import Rodas from './pages/Rodas'
 import Clube from './pages/Clube'
@@ -48,6 +50,8 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<ReflexaoDiaria />} />
         <Route path="/checkin" element={<Checkin />} />
+          <Route path="/registro" element={<RegistroRapido />} />
+<Route path="/calendario" element={<Calendario />} />
         <Route path="/home" element={<Home />} />
         <Route path="/dor" element={<Dor />} />
         <Route path="/dor/:id" element={<DorDetalhe />} />
