@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+
+const ATALHOS = [
+  { to: '/registro', titulo: 'Registro rápido', desc: 'gratidão e diário holos', icone: '🙏' },
+  { to: '/dor', titulo: 'Eu Hoje', desc: 'escolha uma dor pra cuidar', icone: '💛' },
+  { to: '/calendario', titulo: 'Calendário', desc: 'veja tudo que você registrou', icone: '📅' },
+  { to: '/store', titulo: 'Holos Store', desc: 'curadoria de parceiros', icone: '🛍️' },
+]
 
 export default function ReflexaoDiaria() {
   const navigate = useNavigate()
@@ -34,12 +41,23 @@ export default function ReflexaoDiaria() {
         </p>
       </div>
       <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-        <button className="btn btn-outline">Salvar</button>
         <button className="btn btn-outline">Compartilhar</button>
       </div>
-      <button className="btn btn-gold" style={{ marginTop: '20px' }} onClick={() => navigate('/checkin')}>
-        Continuar jornada
-      </button>
+
+      <div className="home-grid" style={{ marginTop: '24px' }}>
+        {ATALHOS.map((a) => (
+          <Link
+            key={a.to}
+            to={a.to}
+            className="card"
+            style={{ textAlign: 'center', textDecoration: 'none', color: 'inherit' }}
+          >
+            <div style={{ fontSize: 26, marginBottom: 8 }}>{a.icone}</div>
+            <p style={{ fontWeight: 500, fontSize: 14, marginBottom: 4 }}>{a.titulo}</p>
+            <p className="page-subtitle" style={{ marginBottom: 0, fontSize: 11 }}>{a.desc}</p>
+          </Link>
+        ))}
+      </div>
     </div>
   )
 }
