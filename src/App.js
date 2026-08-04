@@ -4,6 +4,7 @@ import ReflexaoDiaria from './pages/ReflexaoDiaria'
 import Checkin from './pages/Checkin'
 import Home from './pages/Home'
 import Dor from './pages/Dor'
+import Comunidade from './pages/Comunidade'
 import RegistroRapido from './pages/RegistroRapido'
 import Calendario from './pages/Calendario'
 import DorDetalhe from './pages/DorDetalhe'
@@ -54,6 +55,7 @@ function AppRoutes() {
 <Route path="/calendario" element={<Calendario />} />
         <Route path="/home" element={<Home />} />
         <Route path="/dor" element={<Dor />} />
+          <Route path="/comunidade" element={<Comunidade />} />
         <Route path="/dor/:id" element={<DorDetalhe />} />
         <Route path="/rodas" element={<Rodas />} />
         <Route path="/clube" element={<Clube />} />
