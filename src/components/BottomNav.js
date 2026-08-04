@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom'
 
 const ITENS = [
-  { to: '/', label: 'Reflexão', icon: '🌅', end: true },
-  { to: '/checkin', label: 'Check-in', icon: '✓' },
-  { to: '/home', label: 'Home', icon: '🏠' },
-  { to: '/premium', label: 'Premium', icon: '👑' },
-  { to: '/perfil', label: 'Perfil', icon: '👤' },
+  { to: '/', label: 'Hoje', icon: '🕊️', end: true },
+  { to: '/registro', label: 'Cuidado', icon: '🫀' },
+  { to: '/calendario', label: 'Evolução', icon: '📈' },
+  { to: '/comunidade', label: 'Comunidade', icon: '👥' },
+  { to: '/perfil', label: 'Conta', icon: '⚙️' },
 ]
 
 export default function BottomNav() {
