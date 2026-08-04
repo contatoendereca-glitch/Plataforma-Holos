@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const ATALHOS = [
+  { to: "/registro", titulo: "Registro rápido", desc: "gratidão e diário holos", icone: "🙏" },
   { to: "/dor", titulo: "Eu Hoje", desc: "escolha uma dor pra cuidar", icone: "💛" },
+  { to: "/calendario", titulo: "Calendário", desc: "veja tudo que você registrou", icone: "📅" },
   { to: "/rodas", titulo: "Rodas Holos", desc: "conversas em grupo", icone: "🗣️" },
   { to: "/clube", titulo: "Clube Holos", desc: "leitura em grupo", icone: "📚" },
   { to: "/store", titulo: "Holos Store", desc: "curadoria de parceiros", icone: "🛍️" },
