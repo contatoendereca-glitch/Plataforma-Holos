@@ -27,7 +27,7 @@ export default function Clube() {
 
   return (
     <div className="page-content">
-      <NavAcoes voltarPara="/home" />
+      <NavAcoes voltarPara="/comunidade" />
       <h2 className="page-title">Clube Holos</h2>
       <p className="page-subtitle">leitura em grupo</p>
 
