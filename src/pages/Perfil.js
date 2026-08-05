@@ -19,7 +19,7 @@ export default function Perfil() {
   useEffect(() => {
     async function carregar() {
       const [checkins, gratidoes, diario] = await Promise.all([
-        supabase.from("checkins").select("id", { count: "exact", head: true }).eq("usuario_id", perfil.id),
+        supabase.from("checkins").select("id", { count: "exact", head: true }).eq("perfil_id", perfil.id),
         supabase.from("gratidoes").select("id", { count: "exact", head: true }).eq("usuario_id", perfil.id),
         supabase.from("diario_holos").select("id", { count: "exact", head: true }).eq("usuario_id", perfil.id),
       ]);
@@ -40,14 +40,9 @@ export default function Perfil() {
     }
   }
 
-  async function compartilharApp() {
-    const url = "https://plataforma-holos.vercel.app";
-    if (navigator.share) {
-      navigator.share({ title: "Plataforma Holos", text: "Dá uma olhada no Holos", url });
-    } else {
-      navigator.clipboard.writeText(url);
-      alert("Link copiado.");
-    }
+  function compartilharApp() {
+    const mensagem = `Tô usando a Plataforma Holos pra cuidar de mim em Corpo, Alma e Espírito. Bora comigo?\n\n📲 https://plataforma-holos.vercel.app`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`, "_blank");
   }
 
   return (
