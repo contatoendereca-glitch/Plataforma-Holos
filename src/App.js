@@ -28,11 +28,13 @@ function AppRoutes() {
     )
   }
 
-  if (!user) {
+if (!user) {
     return (
-      <Routes>
-        <Route path="*" element={<Login />} />
-      </Routes>
+      <div className="app-layout">
+        <Routes>
+          <Route path="*" element={<Login />} />
+        </Routes>
+      </div>
     )
   }
 
