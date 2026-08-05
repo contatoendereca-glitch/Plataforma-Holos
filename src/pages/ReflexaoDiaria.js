@@ -31,8 +31,8 @@ export default function ReflexaoDiaria() {
 
   function compartilhar() {
     if (!reflexao) return
-    const texto = encodeURIComponent(reflexao.texto)
-    window.open(`https://wa.me/?text=${texto}`, '_blank')
+    const mensagem = `"${reflexao.texto}"\n\n— Plataforma Holos 🕊️\n📲 https://plataforma-holos.vercel.app\n📸 @psi.fernandalima_`
+    window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`, '_blank')
   }
 
   function ouvir() {
