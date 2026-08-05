@@ -1,10 +1,8 @@
-// Corrigido: import de ../lib/supabase e useAuth() (não mais ../supabaseClient
-// nem usePerfil()). Navega pra /home no final porque /calendario ainda não
-// existe no projeto — troque quando o Calendário for construído.
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
+import NavAcoes from "../components/NavAcoes";
 
 export default function Checkin() {
   const { perfil } = useAuth();
@@ -31,14 +29,16 @@ export default function Checkin() {
     });
     setSalvando(false);
     if (error) {
-      setErro("Não foi possível salvar. Tente novamente.");
+      console.error(error);
+      setErro(`Não foi possível salvar: ${error.message}`);
       return;
     }
-    navigate("/home");
+    navigate("/evolucao");
   }
 
   return (
     <div className="page-content">
+      <NavAcoes voltarPara="/cuidado" />
       <h2 className="page-title">Check-in diário</h2>
       <p className="page-subtitle">como você está agora, nos 3 eixos</p>
 
