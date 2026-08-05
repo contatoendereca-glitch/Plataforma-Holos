@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
+import NavAcoes from "../components/NavAcoes";
 
 export default function RegistroRapido() {
   const { perfil } = useAuth();
@@ -13,7 +14,7 @@ export default function RegistroRapido() {
   const [conteudo, setConteudo] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(null);
-  const [sucesso, setSucesso] = useState(null); // "gratidao" | "diario" | null
+  const [sucesso, setSucesso] = useState(null);
 
   async function salvarGratidao() {
     if (!campo1 || !campo2 || !campo3) {
@@ -29,7 +30,7 @@ export default function RegistroRapido() {
       campo_3: campo3,
     });
     setSalvando(false);
-    if (error) { setErro("Não foi possível salvar."); return; }
+    if (error) { setErro(`Não foi possível salvar: ${error.message}`); return; }
     setSucesso("gratidao");
   }
 
@@ -46,7 +47,7 @@ export default function RegistroRapido() {
       conteudo,
     });
     setSalvando(false);
-    if (error) { setErro("Não foi possível salvar."); return; }
+    if (error) { setErro(`Não foi possível salvar: ${error.message}`); return; }
     setSucesso("diario");
   }
 
@@ -69,6 +70,7 @@ export default function RegistroRapido() {
 
   return (
     <div className="page-content">
+      <NavAcoes voltarPara="/cuidado" />
       <h2 className="page-title">Registro rápido</h2>
       <p className="page-subtitle">gratidão e diário num só lugar</p>
 
