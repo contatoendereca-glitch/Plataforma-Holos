@@ -2,8 +2,8 @@ import { NavLink } from 'react-router-dom'
 
 const ITENS = [
   { to: '/', label: 'Hoje', icon: '🕊️', end: true },
-  { to: '/registro', label: 'Cuidado', icon: '🫀' },
-  { to: '/calendario', label: 'Evolução', icon: '📈' },
+  { to: '/cuidado', label: 'Cuidado', icon: '🫀' },
+  { to: '/evolucao', label: 'Evolução', icon: '📈' },
   { to: '/comunidade', label: 'Comunidade', icon: '👥' },
   { to: '/perfil', label: 'Conta', icon: '⚙️' },
 ]
