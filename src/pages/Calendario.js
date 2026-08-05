@@ -7,7 +7,7 @@ import NavAcoes from "../components/NavAcoes";
 const TIPOS = ["checkin", "gratidao", "diario"];
 
 const INFO_TIPO = {
-  checkin: { icone: "🫀", label: "Check-in", rota: "/checkin" },
+  checkin: { icone: "💪", label: "Check-in", rota: "/checkin" },
   gratidao: { icone: "🙏", label: "Gratidão", rota: "/registro" },
   diario: { icone: "✝️", label: "Diário Holos", rota: "/registro" },
 };
@@ -20,7 +20,7 @@ function inicioFimDoMes(data) {
 
 function resumoEntrada(entrada) {
   if (entrada.tipo === "checkin") {
-    return `🫀 ${entrada.nota_corpo} · 💛 ${entrada.nota_alma} · ✝️ ${entrada.nota_espirito}`;
+    return `💪 ${entrada.nota_corpo} · 💛 ${entrada.nota_alma} · ✝️ ${entrada.nota_espirito}`;
   }
   if (entrada.tipo === "gratidao") {
     return [entrada.campo_1, entrada.campo_2, entrada.campo_3].filter(Boolean).join(" · ");
