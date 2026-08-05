@@ -1,15 +1,19 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import ReflexaoDiaria from './pages/ReflexaoDiaria'
+import Cuidado from './pages/Cuidado'
 import Checkin from './pages/Checkin'
-import Home from './pages/Home'
-import Dor from './pages/Dor'
-import Comunidade from './pages/Comunidade'
 import RegistroRapido from './pages/RegistroRapido'
-import Calendario from './pages/Calendario'
+import Dor from './pages/Dor'
 import DorDetalhe from './pages/DorDetalhe'
+import Evolucao from './pages/Evolucao'
+import Calendario from './pages/Calendario'
+import Mapa from './pages/Mapa'
+import Avaliacao from './pages/Avaliacao'
+import Comunidade from './pages/Comunidade'
 import Rodas from './pages/Rodas'
 import Clube from './pages/Clube'
+import Profissionais from './pages/Profissionais'
 import Loja from './pages/Loja'
 import Premium from './pages/Premium'
 import Perfil from './pages/Perfil'
@@ -28,7 +32,7 @@ function AppRoutes() {
     )
   }
 
-if (!user) {
+  if (!user) {
     return (
       <div className="app-layout">
         <Routes>
@@ -52,18 +56,28 @@ if (!user) {
 
       <Routes>
         <Route path="/" element={<ReflexaoDiaria />} />
+
+        <Route path="/cuidado" element={<Cuidado />} />
         <Route path="/checkin" element={<Checkin />} />
-          <Route path="/registro" element={<RegistroRapido />} />
-<Route path="/calendario" element={<Calendario />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/registro" element={<RegistroRapido />} />
         <Route path="/dor" element={<Dor />} />
-          <Route path="/comunidade" element={<Comunidade />} />
         <Route path="/dor/:id" element={<DorDetalhe />} />
+
+        <Route path="/evolucao" element={<Evolucao />} />
+        <Route path="/calendario" element={<Calendario />} />
+        <Route path="/mapa" element={<Mapa />} />
+        <Route path="/avaliacao" element={<Avaliacao />} />
+
+        <Route path="/comunidade" element={<Comunidade />} />
         <Route path="/rodas" element={<Rodas />} />
         <Route path="/clube" element={<Clube />} />
+        <Route path="/profissionais" element={<Profissionais />} />
+
         <Route path="/store" element={<Loja />} />
         <Route path="/premium" element={<Premium />} />
         <Route path="/perfil" element={<Perfil />} />
+
+        <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <BottomNav />
