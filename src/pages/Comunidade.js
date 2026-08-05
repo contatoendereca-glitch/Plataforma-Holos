@@ -1,31 +1,33 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import NavAcoes from "../components/NavAcoes";
+
+const ITENS = [
+  { to: "/rodas", titulo: "Rodas Holos", desc: "conversa em grupo, link liberado pela admin", icone: "🗣️", badge: "Premium" },
+  { to: "/clube", titulo: "Clube Holos", desc: "livro do mês + grupo de leitura", icone: "📚", badge: "Premium" },
+  { to: "/profissionais", titulo: "Profissionais", desc: "vitrine de quem pode te acompanhar", icone: "🧑‍⚕️", badge: null },
+];
 
 export default function Comunidade() {
   return (
     <div className="page-content">
-      <NavAcoes voltarPara="/" />
       <h2 className="page-title">Comunidade</h2>
-      <p className="page-subtitle">rodas e clube de leitura</p>
+      <p className="page-subtitle">pessoas e conversas por perto</p>
 
-      <Link to="/rodas" className="pro-card" style={{ textDecoration: "none", color: "inherit" }}>
-        <span style={{ fontSize: 20 }}>🗣️</span>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontWeight: 500, fontSize: 14 }}>Rodas Holos</p>
-          <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>conversa em grupo, link liberado pela admin</p>
-        </div>
-        <span className="badge-premium">Premium</span>
-      </Link>
-
-      <Link to="/clube" className="pro-card" style={{ textDecoration: "none", color: "inherit" }}>
-        <span style={{ fontSize: 20 }}>📚</span>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontWeight: 500, fontSize: 14 }}>Clube Holos</p>
-          <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>livro do mês + grupo de leitura</p>
-        </div>
-        <span className="badge-premium">Premium</span>
-      </Link>
+      {ITENS.map((a) => (
+        <Link
+          key={a.to}
+          to={a.to}
+          className="pro-card"
+          style={{ textDecoration: "none", color: "inherit", alignItems: "center" }}
+        >
+          <span style={{ fontSize: 22 }}>{a.icone}</span>
+          <div style={{ flex: 1 }}>
+            <p className="section-label" style={{ marginBottom: 2 }}>{a.titulo}</p>
+            <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>{a.desc}</p>
+          </div>
+          {a.badge && <span className="badge-premium">{a.badge}</span>}
+        </Link>
+      ))}
     </div>
   );
 }
