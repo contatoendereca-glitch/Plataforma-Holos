@@ -12,6 +12,7 @@ const ATALHOS = [
 export default function ReflexaoDiaria() {
   const [reflexao, setReflexao] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [lendo, setLendo] = useState(false)
 
   useEffect(() => { carregar() }, [])
 
@@ -34,6 +35,16 @@ export default function ReflexaoDiaria() {
     window.open(`https://wa.me/?text=${texto}`, '_blank')
   }
 
+  function ouvir() {
+    if (!reflexao || !window.speechSynthesis) return
+    window.speechSynthesis.cancel() // corta qualquer leitura anterior
+    const fala = new SpeechSynthesisUtterance(reflexao.texto)
+    fala.lang = 'pt-BR'
+    fala.onstart = () => setLendo(true)
+    fala.onend = () => setLendo(false)
+    window.speechSynthesis.speak(fala)
+  }
+
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>
 
   return (
@@ -47,11 +58,9 @@ export default function ReflexaoDiaria() {
 
       <div style={{ display: 'flex', gap: '8px', marginTop: '16px', marginBottom: '24px' }}>
         <button className="btn btn-outline" onClick={compartilhar}>Compartilhar</button>
-        {reflexao?.audio_url && (
-          <button className="btn btn-outline" onClick={() => window.open(reflexao.audio_url, '_blank')}>
-            Ouvir
-          </button>
-        )}
+        <button className="btn btn-outline" onClick={ouvir} disabled={!reflexao}>
+          {lendo ? 'Lendo...' : 'Ouvir'}
+        </button>
       </div>
 
       {ATALHOS.map((a) => (
