@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import NavAcoes from "../components/NavAcoes";
@@ -11,6 +12,7 @@ function inicioFimDoMes(data) {
 
 export default function Calendario() {
   const { perfil } = useAuth();
+  const navigate = useNavigate();
   const [mesRef] = useState(new Date());
   const [diaSelecionado, setDiaSelecionado] = useState(new Date().getDate());
   const [entradasPorDia, setEntradasPorDia] = useState({});
@@ -48,19 +50,18 @@ export default function Calendario() {
   }, [perfil, mesRef]);
 
   const diasDoMes = useMemo(() => inicioFimDoMes(mesRef).fim.getDate(), [mesRef]);
-  const hoje = new Date().getDate();
 
-  const rotulos = {
-    checkin: "Check-in — Corpo, Alma, Espírito",
-    gratidao: "Gratidão registrada",
-    diario: "Diário Holos — registro",
+  const INFO_TIPO = {
+    checkin: { icone: "🫀", label: "Check-in — Corpo, Alma, Espírito", rota: "/checkin" },
+    gratidao: { icone: "🙏", label: "Gratidão registrada", rota: "/registro" },
+    diario: { icone: "✝️", label: "Diário Holos — registro", rota: "/registro" },
   };
 
   const entradasDoDia = entradasPorDia[diaSelecionado] || [];
 
   return (
     <div className="page-content">
-      <NavAcoes voltarPara="/home" />
+      <NavAcoes voltarPara="/evolucao" />
       <h2 className="page-title">Calendário</h2>
       <p className="page-subtitle">
         {mesRef.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
@@ -78,7 +79,7 @@ export default function Calendario() {
                 <div
                   key={dia}
                   className={`dia-check ${classe} ${dia === diaSelecionado ? "dia-hoje" : ""}`}
-                  style={{ cursor: "pointer", opacity: dia === hoje ? 1 : 0.85 }}
+                  style={{ cursor: "pointer" }}
                   onClick={() => setDiaSelecionado(dia)}
                 >
                   {dia}
@@ -92,11 +93,21 @@ export default function Calendario() {
             {entradasDoDia.length === 0 ? (
               <p className="page-subtitle" style={{ margin: 0 }}>Nenhum registro nesse dia.</p>
             ) : (
-              entradasDoDia.map((tipo, i) => (
-                <div className="metrica-row" key={i}>
-                  <span className="metrica-label">{rotulos[tipo]}</span>
-                </div>
-              ))
+              entradasDoDia.map((tipo, i) => {
+                const info = INFO_TIPO[tipo];
+                return (
+                  <div
+                    key={i}
+                    className="pro-card"
+                    style={{ cursor: "pointer", marginBottom: 8 }}
+                    onClick={() => navigate(info.rota)}
+                  >
+                    <span style={{ fontSize: 18 }}>{info.icone}</span>
+                    <div style={{ flex: 1 }}>{info.label}</div>
+                    <span style={{ color: "var(--gold)", fontSize: 12 }}>abrir ›</span>
+                  </div>
+                );
+              })
             )}
           </div>
         </>
