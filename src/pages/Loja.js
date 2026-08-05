@@ -47,7 +47,7 @@ export default function Loja() {
 
   return (
     <div className="page-content">
-      <NavAcoes voltarPara="/home" />
+      <NavAcoes voltarPara="/" />
       <h2 className="page-title">Holos Store</h2>
       <p className="page-subtitle">curadoria por categoria, links de parceiros</p>
 
