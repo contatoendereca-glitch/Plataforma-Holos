@@ -14,7 +14,7 @@ export default function BottomNav() {
       {ITENS.map(item => (
         <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <span style={{ fontSize: '16px' }}>{item.icon}</span>
-          <span>{item.label}</span>
+          <span style={{ fontSize: '10px' }}>{item.label}</span>
         </NavLink>
       ))}
     </nav>
