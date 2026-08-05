@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../context/AuthContext";
 import NavAcoes from "../components/NavAcoes";
 
 export default function Clube() {
-  const { isPremium } = useAuth();
   const [livro, setLivro] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
@@ -33,7 +31,7 @@ export default function Clube() {
     <div className="page-content">
       <NavAcoes voltarPara="/comunidade" />
       <h2 className="page-title">Clube Holos</h2>
-      <p className="page-subtitle">leitura em grupo, o convite é livre pra todo mundo</p>
+      <p className="page-subtitle">leitura em grupo, aberto pra todo mundo</p>
 
       {carregando && <p className="page-subtitle">Carregando...</p>}
       {!carregando && !livro && (
@@ -53,15 +51,9 @@ export default function Clube() {
 
           <div style={{ display: "flex", gap: 8 }}>
             <button className="btn btn-outline" style={{ flex: 1 }} onClick={convidar}>Convidar</button>
-            {isPremium ? (
-              <button className="btn btn-gold" style={{ flex: 1 }} onClick={() => window.open(livro.link_grupo, "_blank")}>
-                Entrar no grupo
-              </button>
-            ) : (
-              <button className="btn btn-outline" style={{ flex: 1, opacity: 0.6 }} disabled>
-                🔒 Premium
-              </button>
-            )}
+            <button className="btn btn-gold" style={{ flex: 1 }} onClick={() => window.open(livro.link_grupo, "_blank")}>
+              Entrar no grupo
+            </button>
           </div>
         </div>
       )}
