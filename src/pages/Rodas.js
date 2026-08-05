@@ -24,7 +24,7 @@ export default function Rodas() {
 
   return (
     <div className="page-content">
-      <NavAcoes voltarPara="/home" />
+      <NavAcoes voltarPara="/comunidade" />
       <h2 className="page-title">Rodas Holos</h2>
       <p className="page-subtitle">conversas em grupo com data marcada</p>
 
