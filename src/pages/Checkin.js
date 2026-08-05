@@ -4,29 +4,64 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import NavAcoes from "../components/NavAcoes";
 
+const EIXOS = [
+  { chave: "nota_corpo", rotulo: "Corpo", icone: "🫀" },
+  { chave: "nota_alma", rotulo: "Alma", icone: "💛" },
+  { chave: "nota_espirito", rotulo: "Espírito", icone: "✝️" },
+];
+
+function hojeISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function SeletorNota({ valor, aoMudar }) {
+  return (
+    <div style={{ display: "flex", gap: 6 }}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          className={valor === n ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm"}
+          style={{ flex: 1 }}
+          onClick={() => aoMudar(n)}
+        >
+          {n}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function Checkin() {
   const { perfil } = useAuth();
   const navigate = useNavigate();
 
-  const [corpo, setCorpo] = useState("");
-  const [alma, setAlma] = useState("");
-  const [espirito, setEspirito] = useState("");
+  const [notas, setNotas] = useState({ nota_corpo: null, nota_alma: null, nota_espirito: null });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(null);
 
+  function definirNota(chave, valor) {
+    setNotas((prev) => ({ ...prev, [chave]: valor }));
+  }
+
   async function salvar() {
-    if (!corpo || !alma || !espirito) {
-      setErro("Preencha os 3 campos antes de registrar.");
+    if (!notas.nota_corpo || !notas.nota_alma || !notas.nota_espirito) {
+      setErro("Dê uma nota de 1 a 5 pros 3 eixos antes de registrar.");
       return;
     }
     setSalvando(true);
     setErro(null);
-    const { error } = await supabase.from("checkins").insert({
-      usuario_id: perfil.id,
-      corpo,
-      alma,
-      espirito,
-    });
+    const { error } = await supabase.from("checkins").upsert(
+      {
+        perfil_id: perfil.id,
+        data: hojeISO(),
+        nota_corpo: notas.nota_corpo,
+        nota_alma: notas.nota_alma,
+        nota_espirito: notas.nota_espirito,
+      },
+      { onConflict: "perfil_id,data" }
+    );
     setSalvando(false);
     if (error) {
       console.error(error);
@@ -40,22 +75,16 @@ export default function Checkin() {
     <div className="page-content">
       <NavAcoes voltarPara="/cuidado" />
       <h2 className="page-title">Check-in diário</h2>
-      <p className="page-subtitle">como você está agora, nos 3 eixos</p>
+      <p className="page-subtitle">como você está agora, nos 3 eixos (1 = muito baixo, 5 = muito bem)</p>
 
       {erro && <p className="erro-msg">{erro}</p>}
 
-      <div className="input-group">
-        <label className="input-label">Corpo</label>
-        <input className="input" value={corpo} onChange={(e) => setCorpo(e.target.value)} placeholder="ex: cansado, com energia, tenso..." />
-      </div>
-      <div className="input-group">
-        <label className="input-label">Alma</label>
-        <input className="input" value={alma} onChange={(e) => setAlma(e.target.value)} placeholder="ex: ansioso, em paz, confuso..." />
-      </div>
-      <div className="input-group">
-        <label className="input-label">Espírito</label>
-        <input className="input" value={espirito} onChange={(e) => setEspirito(e.target.value)} placeholder="ex: conectado, distante, em busca..." />
-      </div>
+      {EIXOS.map((eixo) => (
+        <div className="input-group" key={eixo.chave}>
+          <label className="input-label">{eixo.icone} {eixo.rotulo}</label>
+          <SeletorNota valor={notas[eixo.chave]} aoMudar={(v) => definirNota(eixo.chave, v)} />
+        </div>
+      ))}
 
       <button className="btn btn-gold" disabled={salvando} onClick={salvar}>
         {salvando ? "Salvando..." : "Registrar check-in"}
