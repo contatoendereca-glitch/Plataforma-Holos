@@ -18,7 +18,7 @@ export default function Dor() {
 
   return (
     <div className="page-content">
-      <NavAcoes voltarPara="/home" />
+      <NavAcoes voltarPara="/cuidado" />
       <h2 className="page-title">Eu Hoje</h2>
       <p className="page-subtitle">com o que você quer cuidar agora?</p>
 
