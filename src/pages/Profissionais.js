@@ -19,7 +19,7 @@ export default function Profissionais() {
       const { data } = await supabase
         .from("perfis")
         .select("id, nome, pontos_ajudou")
-        .eq("papel", "profissional")
+ .eq("papel", "Profissional")
         .order("pontos_ajudou", { ascending: false });
       setProfissionais(data || []);
 
