@@ -83,6 +83,12 @@ export default function Perfil() {
 
       <div className="divider" />
 
+      {perfil?.papel === "Admin" && (
+        <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/admin")}>
+          <span className="metrica-label">🛠️ Painel Admin</span>
+          <span className="metrica-valor">›</span>
+        </div>
+      )}
       {perfil?.papel === "Profissional" && (
         <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/painel-profissional")}>
           <span className="metrica-label">📋 Meu painel profissional</span>
