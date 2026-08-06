@@ -89,6 +89,12 @@ export default function Perfil() {
           <span className="metrica-valor">›</span>
         </div>
       )}
+      {perfil?.papel === "Usuario" && (
+        <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/seja-profissional")}>
+          <span className="metrica-label">Seja Profissional Holos</span>
+          <span className="metrica-valor">›</span>
+        </div>
+      )}
 
       <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => setEditando(true)}>
         <span className="metrica-label">Editar nome</span>
