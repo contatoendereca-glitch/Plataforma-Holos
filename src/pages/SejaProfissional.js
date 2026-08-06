@@ -10,7 +10,7 @@ export default function SejaProfissional() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState(null);
 
-  const [form, setForm] = useState({ area_atuacao: "", credencial_link: "", mensagem: "" });
+  const [form, setForm] = useState({ area_atuacao: "", email: perfil?.email || "", whatsapp: "", credencial_link: "", mensagem: "" });
 
   useEffect(() => {
     async function carregar() {
@@ -33,8 +33,8 @@ export default function SejaProfissional() {
 
   async function enviar(e) {
     e.preventDefault();
-    if (!form.area_atuacao) {
-      setErro("Conta pra gente sua área de atuação antes de enviar.");
+    if (!form.area_atuacao || !form.email || !form.whatsapp) {
+      setErro("Conta pra gente sua área de atuação, e-mail e WhatsApp antes de enviar.");
       return;
     }
     setEnviando(true);
@@ -42,6 +42,8 @@ export default function SejaProfissional() {
     const { error } = await supabase.from("candidaturas_profissional").insert({
       perfil_id: perfil.id,
       area_atuacao: form.area_atuacao,
+      email: form.email || null,
+      whatsapp: form.whatsapp || null,
       credencial_link: form.credencial_link || null,
       mensagem: form.mensagem || null,
     });
@@ -102,6 +104,27 @@ export default function SejaProfissional() {
             value={form.area_atuacao}
             onChange={(e) => atualizarCampo("area_atuacao", e.target.value)}
             placeholder="ex: Psicóloga clínica, Psicanalista, Terapeuta..."
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">E-mail de contato</label>
+          <input
+            className="input"
+            type="email"
+            value={form.email}
+            onChange={(e) => atualizarCampo("email", e.target.value)}
+            placeholder="seuemail@exemplo.com"
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">WhatsApp (com DDD)</label>
+          <input
+            className="input"
+            value={form.whatsapp}
+            onChange={(e) => atualizarCampo("whatsapp", e.target.value)}
+            placeholder="(11) 91234-5678"
           />
         </div>
 
