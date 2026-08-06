@@ -17,6 +17,7 @@ import Profissionais from './pages/Profissionais'
 import Loja from './pages/Loja'
 import Premium from './pages/Premium'
 import Perfil from './pages/Perfil'
+import PainelProfissional from './pages/PainelProfissional'
 import Login from './pages/Login'
 import BottomNav from './components/BottomNav'
 import './styles/global.css'
@@ -76,6 +77,7 @@ function AppRoutes() {
         <Route path="/store" element={<Loja />} />
         <Route path="/premium" element={<Premium />} />
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/painel-profissional" element={<PainelProfissional />} />
 
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
