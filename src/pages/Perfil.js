@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 
@@ -12,6 +13,7 @@ function iniciais(nome) {
 
 export default function Perfil() {
   const { perfil, isPremium, sair, carregarPerfil } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({ checkins: 0, gratidoes: 0, diario: 0 });
   const [editando, setEditando] = useState(false);
   const [nome, setNome] = useState(perfil?.nome || "");
@@ -80,6 +82,13 @@ export default function Perfil() {
       </div>
 
       <div className="divider" />
+
+      {perfil?.papel === "Profissional" && (
+        <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/painel-profissional")}>
+          <span className="metrica-label">📋 Meu painel profissional</span>
+          <span className="metrica-valor">›</span>
+        </div>
+      )}
 
       <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => setEditando(true)}>
         <span className="metrica-label">Editar nome</span>
