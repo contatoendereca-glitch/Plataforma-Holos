@@ -19,6 +19,7 @@ import Premium from './pages/Premium'
 import Perfil from './pages/Perfil'
 import PainelProfissional from './pages/PainelProfissional'
 import SejaProfissional from './pages/SejaProfissional'
+import PainelAdmin from './pages/PainelAdmin'
 import Login from './pages/Login'
 import BottomNav from './components/BottomNav'
 import './styles/global.css'
@@ -80,6 +81,7 @@ function AppRoutes() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/painel-profissional" element={<PainelProfissional />} />
         <Route path="/seja-profissional" element={<SejaProfissional />} />
+        <Route path="/admin" element={<PainelAdmin />} />
 
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
