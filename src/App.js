@@ -18,6 +18,7 @@ import Loja from './pages/Loja'
 import Premium from './pages/Premium'
 import Perfil from './pages/Perfil'
 import PainelProfissional from './pages/PainelProfissional'
+import SejaProfissional from './pages/SejaProfissional'
 import Login from './pages/Login'
 import BottomNav from './components/BottomNav'
 import './styles/global.css'
@@ -78,6 +79,7 @@ function AppRoutes() {
         <Route path="/premium" element={<Premium />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/painel-profissional" element={<PainelProfissional />} />
+        <Route path="/seja-profissional" element={<SejaProfissional />} />
 
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
