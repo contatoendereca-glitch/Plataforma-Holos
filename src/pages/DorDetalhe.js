@@ -88,10 +88,11 @@ export default function DorDetalhe() {
 
   function BlocoEixo({ nomeEixo, dourado }) {
     const lista = porEixo(nomeEixo);
+    const label = nomeEixo === "Consciencia" ? "Consciência" : nomeEixo;
     return (
       <div className={dourado ? "card-gold" : "card"}>
         <p className="section-label">
-          {nomeEixo} {nomeEixo === "Alma" && <span className="badge-gratuito">sempre liberado</span>}
+          {label} {nomeEixo === "Mente" && <span className="badge-gratuito">sempre liberado</span>}
         </p>
         {lista.length === 0 ? (
           <p className="page-subtitle" style={{ margin: 0 }}>Nenhum conteúdo ainda.</p>
@@ -109,8 +110,8 @@ export default function DorDetalhe() {
       <p className="page-subtitle">enviado pelos profissionais</p>
 
       <BlocoEixo nomeEixo="Corpo" />
-      <BlocoEixo nomeEixo="Alma" dourado />
-      <BlocoEixo nomeEixo="Espirito" />
+      <BlocoEixo nomeEixo="Mente" dourado />
+      <BlocoEixo nomeEixo="Consciencia" />
     </div>
   );
 }
