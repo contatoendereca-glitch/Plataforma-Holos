@@ -21,6 +21,8 @@ import PainelProfissional from './pages/PainelProfissional'
 import SejaProfissional from './pages/SejaProfissional'
 import PainelAdmin from './pages/PainelAdmin'
 import Login from './pages/Login'
+import Sobre from './pages/Sobre'
+import { ReactComponent as HolosLogo } from './assets/holos-logo.svg'
 import BottomNav from './components/BottomNav'
 import './styles/global.css'
 
@@ -39,6 +41,7 @@ function AppRoutes() {
     return (
       <div className="app-layout">
         <Routes>
+          <Route path="/sobre" element={<Sobre />} />
           <Route path="*" element={<Login />} />
         </Routes>
       </div>
@@ -49,6 +52,7 @@ function AppRoutes() {
     <div className="app-layout">
       <header className="topbar">
         <div className="topbar-logo">
+          <HolosLogo width={32} height={32} />
           <div className="topbar-logo-text">
             <span className="topbar-logo-plataforma">PLATAFORMA</span>
             <span className="topbar-logo-holos">HOLOS</span>
@@ -82,6 +86,7 @@ function AppRoutes() {
         <Route path="/painel-profissional" element={<PainelProfissional />} />
         <Route path="/seja-profissional" element={<SejaProfissional />} />
         <Route path="/admin" element={<PainelAdmin />} />
+        <Route path="/sobre" element={<Sobre />} />
 
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
