@@ -38,19 +38,19 @@ export default function DorDetalhe() {
     carregar();
   }, [id, perfil]);
 
-  async function marcarAjudou(conteudoId) {
+async function marcarAjudou(conteudoId) {
     if (avaliados[conteudoId]) return;
     setErroAjudou(null);
     const { error } = await supabase
       .from("avaliacoes_conteudo")
       .insert({ conteudo_id: conteudoId, usuario_id: perfil.id });
     if (error) {
-      setErroAjudou("Não foi possível registrar agora. Tenta de novo em instantes.");
+      console.error(error);
+      setErroAjudou(`Não foi possível registrar: ${error.message}`);
       return;
     }
     setAvaliados((prev) => ({ ...prev, [conteudoId]: true }));
   }
-
   function abrirLink(url) {
     window.open(url, "_blank", "noopener,noreferrer");
   }
