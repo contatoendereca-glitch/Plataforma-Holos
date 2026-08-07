@@ -48,7 +48,7 @@ function poligono(medias) {
 function RadarChart({ atual, anterior }) {
   const aneis = [1, 2, 3, 4, 5];
   return (
-    <svg viewBox="0 0 240 240" style={{ width: "100%", maxWidth: 300, display: "block", margin: "0 auto" }}>
+ <svg viewBox="-20 0 260 240" style={{ width: "100%", maxWidth: 300, display: "block", margin: "0 auto" }}>
       {aneis.map((nivel) => {
         const pts = EIXOS.map((e) => ponto(e.angulo, nivel)).map((p) => p.join(",")).join(" ");
         return <polygon key={nivel} points={pts} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />;
