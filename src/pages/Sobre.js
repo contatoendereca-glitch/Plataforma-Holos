@@ -23,7 +23,7 @@ export default function Sobre() {
 
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
         
-          className="btn btn-outline btn-sm"
+         <aclassName="btn btn-outline btn-sm"
           href="https://instagram.com/psi.fernandalima_"
           target="_blank"
           rel="noreferrer"
@@ -31,7 +31,7 @@ export default function Sobre() {
           Instagram
         </a>
         
-          className="btn btn-outline btn-sm"
+          <aclassName="btn btn-outline btn-sm"
           href="https://www.youtube.com/@psicanalista.fernandalima"
           target="_blank"
           rel="noreferrer"
