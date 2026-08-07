@@ -38,7 +38,7 @@ export default function DorDetalhe() {
     carregar();
   }, [id, perfil]);
 
-async function marcarAjudou(conteudoId) {
+  async function marcarAjudou(conteudoId) {
     if (avaliados[conteudoId]) return;
     setErroAjudou(null);
     const { error } = await supabase
@@ -51,6 +51,7 @@ async function marcarAjudou(conteudoId) {
     }
     setAvaliados((prev) => ({ ...prev, [conteudoId]: true }));
   }
+
   function abrirLink(url) {
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -108,7 +109,6 @@ async function marcarAjudou(conteudoId) {
       <div className={dourado ? "card-gold" : "card"} style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <p className="section-label" style={{ margin: 0 }}>{label}</p>
-          {nomeEixo === "Mente" && <span className="badge-gratuito" style={{ fontSize: 10 }}>sempre liberado</span>}
         </div>
         {lista.length === 0 ? (
           <p className="page-subtitle" style={{ margin: 0 }}>Nenhum conteúdo ainda.</p>
