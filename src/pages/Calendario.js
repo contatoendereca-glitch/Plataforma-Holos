@@ -7,9 +7,9 @@ import NavAcoes from "../components/NavAcoes";
 const TIPOS = ["checkin", "gratidao", "diario"];
 
 const INFO_TIPO = {
-  checkin: { icone: "💪", label: "Check-in", rota: "/checkin" },
-  gratidao: { icone: "🙏", label: "Gratidão", rota: "/registro" },
-  diario: { icone: "✝️", label: "Diário Holos", rota: "/registro" },
+  checkin: { label: "Check-in", rota: "/checkin" },
+  gratidao: { label: "Gratidão", rota: "/registro" },
+  diario: { label: "Diário Holos", rota: "/registro" },
 };
 
 function inicioFimDoMes(data) {
@@ -20,7 +20,7 @@ function inicioFimDoMes(data) {
 
 function resumoEntrada(entrada) {
   if (entrada.tipo === "checkin") {
-    return `💪 ${entrada.nota_corpo} · 💛 ${entrada.nota_alma} · ✝️ ${entrada.nota_espirito}`;
+    return `Corpo ${entrada.nota_corpo} · Mente ${entrada.nota_mente} · Consciência ${entrada.nota_consciencia}`;
   }
   if (entrada.tipo === "gratidao") {
     return [entrada.campo_1, entrada.campo_2, entrada.campo_3].filter(Boolean).join(" · ");
@@ -44,7 +44,7 @@ export default function Calendario() {
       const isoFim = fim.toISOString();
 
       const [checkins, gratidoes, diario] = await Promise.all([
-        supabase.from("checkins").select("id, nota_corpo, nota_alma, nota_espirito, criado_em").eq("perfil_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
+        supabase.from("checkins").select("id, nota_corpo, nota_mente, nota_consciencia, criado_em").eq("perfil_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
         supabase.from("gratidoes").select("id, campo_1, campo_2, campo_3, criado_em").eq("usuario_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
         supabase.from("diario_holos").select("id, titulo, conteudo, criado_em").eq("usuario_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
       ]);
@@ -134,7 +134,6 @@ export default function Calendario() {
                     style={{ cursor: "pointer", marginBottom: 8 }}
                     onClick={() => navigate(info.rota)}
                   >
-                    <span style={{ fontSize: 18 }}>{info.icone}</span>
                     <div style={{ flex: 1 }}>
                       <p style={{ fontWeight: 500, fontSize: 13, marginBottom: 2 }}>{info.label}</p>
                       <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>{resumoEntrada(entrada)}</p>
@@ -158,7 +157,6 @@ export default function Calendario() {
                     style={{ cursor: "pointer", marginBottom: 8, opacity: 0.75 }}
                     onClick={() => navigate(info.rota)}
                   >
-                    <span style={{ fontSize: 18 }}>{info.icone}</span>
                     <div style={{ flex: 1 }}>{info.label}</div>
                     <span style={{ color: "var(--gold)", fontSize: 12 }}>fazer ›</span>
                   </div>
