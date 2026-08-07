@@ -40,6 +40,7 @@ export default function Checkin() {
   const [notas, setNotas] = useState({ nota_corpo: null, nota_mente: null, nota_consciencia: null });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(null);
+  const [sucesso, setSucesso] = useState(false);
 
   function definirNota(chave, valor) {
     setNotas((prev) => ({ ...prev, [chave]: valor }));
@@ -68,7 +69,8 @@ export default function Checkin() {
       setErro(`Não foi possível salvar: ${error.message}`);
       return;
     }
-    navigate("/evolucao");
+    setSucesso(true);
+    setTimeout(() => navigate("/evolucao"), 1200);
   }
 
   return (
@@ -78,6 +80,11 @@ export default function Checkin() {
       <p className="page-subtitle">como você está agora, nos 3 eixos (1 = muito baixo, 5 = muito bem)</p>
 
       {erro && <p className="erro-msg">{erro}</p>}
+      {sucesso && (
+        <p className="page-subtitle" style={{ color: "var(--gold)", fontWeight: 500 }}>
+          Check-in registrado! Indo pra Evolução...
+        </p>
+      )}
 
       {EIXOS.map((eixo) => (
         <div className="input-group" key={eixo.chave}>
@@ -86,8 +93,8 @@ export default function Checkin() {
         </div>
       ))}
 
-      <button className="btn btn-gold" disabled={salvando} onClick={salvar}>
-        {salvando ? "Salvando..." : "Registrar check-in"}
+      <button className="btn btn-gold" disabled={salvando || sucesso} onClick={salvar}>
+        {salvando ? "Salvando..." : sucesso ? "Registrado ✓" : "Registrar check-in"}
       </button>
     </div>
   );
