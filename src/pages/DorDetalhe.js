@@ -10,6 +10,7 @@ export default function DorDetalhe() {
 
   const [conteudos, setConteudos] = useState([]);
   const [avaliados, setAvaliados] = useState({});
+  const [erroAjudou, setErroAjudou] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
@@ -39,10 +40,15 @@ export default function DorDetalhe() {
 
   async function marcarAjudou(conteudoId) {
     if (avaliados[conteudoId]) return;
+    setErroAjudou(null);
     const { error } = await supabase
       .from("avaliacoes_conteudo")
       .insert({ conteudo_id: conteudoId, usuario_id: perfil.id });
-    if (!error) setAvaliados((prev) => ({ ...prev, [conteudoId]: true }));
+    if (error) {
+      setErroAjudou("Não foi possível registrar agora. Tenta de novo em instantes.");
+      return;
+    }
+    setAvaliados((prev) => ({ ...prev, [conteudoId]: true }));
   }
 
   function abrirLink(url) {
@@ -69,15 +75,24 @@ export default function DorDetalhe() {
     }
 
     return (
-      <div className="pro-card">
-        <span style={{ fontSize: 18 }}>{c.formato === "Audio" ? "🔊" : "📄"}</span>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontWeight: 500, fontSize: 13, marginBottom: 4 }}>{c.titulo}</p>
-          <button className="btn btn-outline btn-sm" onClick={() => abrirLink(c.url_externa)}>
+      <div className="card" style={{ marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <span style={{ fontSize: 18 }}>{c.formato === "Audio" ? "🔊" : "📄"}</span>
+          <p style={{ fontWeight: 500, fontSize: 13, margin: 0, flex: 1 }}>{c.titulo}</p>
+        </div>
+        {c.descricao && (
+          <p className="page-subtitle" style={{ fontSize: 12, marginBottom: 10 }}>{c.descricao}</p>
+        )}
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="btn btn-gold btn-sm" style={{ flex: 1 }} onClick={() => abrirLink(c.url_externa)}>
             {c.formato === "Audio" ? "Ouvir" : "Ler"} ↗
           </button>
-          {!avaliados[c.id] && (
-            <button className="btn btn-outline btn-sm" style={{ marginLeft: 8 }} onClick={() => marcarAjudou(c.id)}>
+          {avaliados[c.id] ? (
+            <span className="badge-gratuito" style={{ flex: 1, textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              💛 ajudou
+            </span>
+          ) : (
+            <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => marcarAjudou(c.id)}>
               Isso me ajudou
             </button>
           )}
@@ -90,10 +105,11 @@ export default function DorDetalhe() {
     const lista = porEixo(nomeEixo);
     const label = nomeEixo === "Consciencia" ? "Consciência" : nomeEixo;
     return (
-      <div className={dourado ? "card-gold" : "card"}>
-        <p className="section-label">
-          {label} {nomeEixo === "Mente" && <span className="badge-gratuito">sempre liberado</span>}
-        </p>
+      <div className={dourado ? "card-gold" : "card"} style={{ marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <p className="section-label" style={{ margin: 0 }}>{label}</p>
+          {nomeEixo === "Mente" && <span className="badge-gratuito" style={{ fontSize: 10 }}>sempre liberado</span>}
+        </div>
         {lista.length === 0 ? (
           <p className="page-subtitle" style={{ margin: 0 }}>Nenhum conteúdo ainda.</p>
         ) : (
@@ -107,7 +123,9 @@ export default function DorDetalhe() {
     <div className="page-content">
       <NavAcoes voltarPara="/dor" />
       <h2 className="page-title">{carregando ? "Carregando..." : "Conteúdo"}</h2>
-      <p className="page-subtitle">enviado pelos profissionais</p>
+      <p className="page-subtitle" style={{ marginBottom: 16 }}>enviado pelos profissionais</p>
+
+      {erroAjudou && <p className="erro-msg">{erroAjudou}</p>}
 
       <BlocoEixo nomeEixo="Corpo" />
       <BlocoEixo nomeEixo="Mente" dourado />
