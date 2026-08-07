@@ -5,9 +5,9 @@ import { useAuth } from "../context/AuthContext";
 import NavAcoes from "../components/NavAcoes";
 
 const EIXOS = [
-  { chave: "nota_corpo", rotulo: "Corpo", icone: "🫀" },
-  { chave: "nota_alma", rotulo: "Alma", icone: "💛" },
-  { chave: "nota_espirito", rotulo: "Espírito", icone: "✝️" },
+  { chave: "nota_corpo", rotulo: "Corpo" },
+  { chave: "nota_mente", rotulo: "Mente" },
+  { chave: "nota_consciencia", rotulo: "Consciência" },
 ];
 
 function hojeISO() {
@@ -37,7 +37,7 @@ export default function Checkin() {
   const { perfil } = useAuth();
   const navigate = useNavigate();
 
-  const [notas, setNotas] = useState({ nota_corpo: null, nota_alma: null, nota_espirito: null });
+  const [notas, setNotas] = useState({ nota_corpo: null, nota_mente: null, nota_consciencia: null });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(null);
 
@@ -46,7 +46,7 @@ export default function Checkin() {
   }
 
   async function salvar() {
-    if (!notas.nota_corpo || !notas.nota_alma || !notas.nota_espirito) {
+    if (!notas.nota_corpo || !notas.nota_mente || !notas.nota_consciencia) {
       setErro("Dê uma nota de 1 a 5 pros 3 eixos antes de registrar.");
       return;
     }
@@ -57,8 +57,8 @@ export default function Checkin() {
         perfil_id: perfil.id,
         data: hojeISO(),
         nota_corpo: notas.nota_corpo,
-        nota_alma: notas.nota_alma,
-        nota_espirito: notas.nota_espirito,
+        nota_mente: notas.nota_mente,
+        nota_consciencia: notas.nota_consciencia,
       },
       { onConflict: "perfil_id,data" }
     );
@@ -81,7 +81,7 @@ export default function Checkin() {
 
       {EIXOS.map((eixo) => (
         <div className="input-group" key={eixo.chave}>
-          <label className="input-label">{eixo.icone} {eixo.rotulo}</label>
+          <label className="input-label">{eixo.rotulo}</label>
           <SeletorNota valor={notas[eixo.chave]} aoMudar={(v) => definirNota(eixo.chave, v)} />
         </div>
       ))}
