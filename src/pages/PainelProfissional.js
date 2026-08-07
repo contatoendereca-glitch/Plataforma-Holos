@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import NavAcoes from "../components/NavAcoes";
+import { calcularSelo, proximoSelo } from "../lib/selos";
 
 const FORMATOS = ["Texto", "Audio"];
 
@@ -98,6 +99,10 @@ export default function PainelProfissional() {
 
   const totalMatches = matches.length;
   const matchesAjudou = matches.filter((m) => m.ajudou).length;
+  const conteudosAprovados = conteudos.filter((c) => c.status === "Aprovado").length;
+  const pontosAjudou = perfil?.pontos_ajudou || 0;
+  const seloAtual = calcularSelo(conteudosAprovados, pontosAjudou);
+  const seloSeguinte = proximoSelo(seloAtual);
 
   return (
     <div className="page-content">
@@ -118,6 +123,27 @@ export default function PainelProfissional() {
           <p style={{ fontFamily: "Cinzel, serif", color: "var(--gold)", fontSize: 18 }}>{matchesAjudou}</p>
           <p className="page-subtitle" style={{ margin: 0, fontSize: 10 }}>marcaram ajudou</p>
         </div>
+      </div>
+
+      <div className="card-gold" style={{ marginBottom: 16 }}>
+        <p className="section-label">Seu selo</p>
+        {seloAtual ? (
+          <p style={{ fontFamily: "Cinzel, serif", color: "var(--gold)", fontSize: 16, marginBottom: 4 }}>
+            🏅 {seloAtual.nome}
+          </p>
+        ) : (
+          <p className="page-subtitle" style={{ marginBottom: 4 }}>Ainda sem selo — envie seu primeiro conteúdo aprovado.</p>
+        )}
+        {seloSeguinte && (
+          <p className="page-subtitle" style={{ fontSize: 12, margin: 0 }}>
+            Próximo: <strong>{seloSeguinte.nome}</strong> — precisa de {seloSeguinte.requisitoConteudos} conteúdo(s) aprovado(s)
+            {seloSeguinte.requisitoPontos > 0 ? ` e ${seloSeguinte.requisitoPontos} pontos` : ""}
+            {" "}(você tem {conteudosAprovados} conteúdo(s) e {pontosAjudou} ponto(s))
+          </p>
+        )}
+        {!seloSeguinte && seloAtual && (
+          <p className="page-subtitle" style={{ fontSize: 12, margin: 0 }}>Você chegou ao nível máximo. 🎉</p>
+        )}
       </div>
 
       <div className="divider" />
