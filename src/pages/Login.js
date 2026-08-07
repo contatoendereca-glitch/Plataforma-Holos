@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { ReactComponent as HolosLogo } from '../assets/holos-logo.svg'
 
 export default function Login() {
   const { login, cadastrar } = useAuth()
@@ -28,10 +29,12 @@ export default function Login() {
   }
 
   return (
-    <div className="page-content" style={{ paddingTop: '60px', textAlign: 'center' }}>
+    <div className="page-content" style={{ paddingTop: '48px', textAlign: 'center' }}>
+      <HolosLogo width={72} height={72} style={{ marginBottom: '8px' }} />
       <h1 className="titulo" style={{ color: 'var(--gold)', fontSize: '26px', marginBottom: '4px' }}>
         PLATAFORMA HOLOS
       </h1>
+      <p className="page-subtitle" style={{ fontStyle: 'italic', marginBottom: '2px' }}>A direção é para dentro.</p>
       <p className="page-subtitle">Seu caminho de transformação começa aqui.</p>
 
       {avisoCadastro ? (
@@ -61,6 +64,12 @@ export default function Login() {
           </p>
         </form>
       )}
+
+      <p style={{ marginTop: '28px' }}>
+        <a href="/sobre" style={{ color: 'var(--text-muted)', fontSize: '12px', textDecoration: 'underline' }}>
+          Sobre a Holos
+        </a>
+      </p>
     </div>
   )
 }
