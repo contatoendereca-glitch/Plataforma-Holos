@@ -1,5 +1,7 @@
 // Radar (SVG puro, sem biblioteca nova) comparando a quinzena atual com a
 // anterior — os eixos "abrem" mais pro lado que teve notas mais altas.
+// Usa texto em vez de emoji nos rótulos: alguns emojis não renderizam em
+// todo sistema operacional/fonte.
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
@@ -20,19 +22,18 @@ function media(lista) {
 function mediasDoPeriodo(linhas) {
   return {
     corpo: media(linhas.map((r) => r.nota_corpo)),
-    alma: media(linhas.map((r) => r.nota_alma)),
-    espirito: media(linhas.map((r) => r.nota_espirito)),
+    mente: media(linhas.map((r) => r.nota_mente)),
+    consciencia: media(linhas.map((r) => r.nota_consciencia)),
   };
 }
 
-// 3 eixos, começando no topo, 120° entre eles. Escala 0-5 do centro até a borda.
 const EIXOS = [
-  { chave: "corpo", label: "Corpo", icone: "💪", angulo: -90 },
-  { chave: "alma", label: "Alma", icone: "💛", angulo: 30 },
-  { chave: "espirito", label: "Espírito", icone: "✝️", angulo: 150 },
+  { chave: "corpo", label: "CORPO", angulo: -90 },
+  { chave: "mente", label: "MENTE", angulo: 30 },
+  { chave: "consciencia", label: "CONSCIÊNCIA", angulo: 150 },
 ];
-const RAIO = 90;
-const CENTRO = 110;
+const RAIO = 85;
+const CENTRO = 120;
 
 function ponto(angulo, valor) {
   const rad = (angulo * Math.PI) / 180;
@@ -47,7 +48,7 @@ function poligono(medias) {
 function RadarChart({ atual, anterior }) {
   const aneis = [1, 2, 3, 4, 5];
   return (
-    <svg viewBox="0 0 220 220" style={{ width: "100%", maxWidth: 280, display: "block", margin: "0 auto" }}>
+    <svg viewBox="0 0 240 240" style={{ width: "100%", maxWidth: 300, display: "block", margin: "0 auto" }}>
       {aneis.map((nivel) => {
         const pts = EIXOS.map((e) => ponto(e.angulo, nivel)).map((p) => p.join(",")).join(" ");
         return <polygon key={nivel} points={pts} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />;
@@ -67,10 +68,20 @@ function RadarChart({ atual, anterior }) {
       })}
 
       {EIXOS.map((e) => {
-        const [x, y] = ponto(e.angulo, 5.9);
+        const [x, y] = ponto(e.angulo, 6.15);
         return (
-          <text key={e.chave} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="14">
-            {e.icone}
+          <text
+            key={e.chave}
+            x={x}
+            y={y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="10"
+            fontFamily="Cinzel, serif"
+            letterSpacing="0.5"
+            fill="var(--gold)"
+          >
+            {e.label}
           </text>
         );
       })}
@@ -80,7 +91,7 @@ function RadarChart({ atual, anterior }) {
 
 export default function Mapa() {
   const { perfil, isPremium } = useAuth();
-  const [atual, setAtual] = useState({ corpo: 0, alma: 0, espirito: 0 });
+  const [atual, setAtual] = useState({ corpo: 0, mente: 0, consciencia: 0 });
   const [anterior, setAnterior] = useState(null);
   const [totalCheckins, setTotalCheckins] = useState(0);
   const [insight, setInsight] = useState(null);
@@ -90,7 +101,7 @@ export default function Mapa() {
     async function carregar() {
       const { data } = await supabase
         .from("checkins")
-        .select("nota_corpo, nota_alma, nota_espirito, data")
+        .select("nota_corpo, nota_mente, nota_consciencia, data")
         .eq("perfil_id", perfil.id)
         .gte("data", hojeMenosDias(30));
 
@@ -104,7 +115,7 @@ export default function Mapa() {
 
       if (quinzenaAtual.length >= 2) {
         const m = mediasDoPeriodo(quinzenaAtual);
-        const nomes = { corpo: "Corpo", alma: "Alma", espirito: "Espírito" };
+        const nomes = { corpo: "Corpo", mente: "Mente", consciencia: "Consciência" };
         const destaque = Object.entries(m).sort((a, b) => b[1] - a[1])[0][0];
         setInsight(`Nos últimos 15 dias, ${nomes[destaque]} foi o eixo com as notas mais altas pra você.`);
       } else {
@@ -122,7 +133,7 @@ export default function Mapa() {
       <div className="page-content">
         <NavAcoes voltarPara="/evolucao" />
         <h2 className="page-title">Mapa Holos</h2>
-        <PremiumGate titulo="Mapa Holos" descricao="seu retrato em Corpo, Alma e Espírito, liberado no Premium" />
+        <PremiumGate titulo="Mapa Holos" descricao="seu retrato em Corpo, Mente e Consciência, liberado no Premium" />
       </div>
     );
   }
@@ -149,9 +160,9 @@ export default function Mapa() {
           )}
 
           <div style={{ display: "flex", justifyContent: "center", gap: 18, marginTop: 10 }}>
-            <span className="metrica-label">💪 {atual.corpo.toFixed(1)}</span>
-            <span className="metrica-label">💛 {atual.alma.toFixed(1)}</span>
-            <span className="metrica-label">✝️ {atual.espirito.toFixed(1)}</span>
+            <span className="metrica-label">Corpo {atual.corpo.toFixed(1)}</span>
+            <span className="metrica-label">Mente {atual.mente.toFixed(1)}</span>
+            <span className="metrica-label">Consciência {atual.consciencia.toFixed(1)}</span>
           </div>
 
           {insight && (
