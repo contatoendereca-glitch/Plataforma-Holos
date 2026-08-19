@@ -17,6 +17,7 @@ export default function Profissionais() {
       .from("perfis")
       .select("id, nome, pontos_ajudou")
       .eq("papel", "Profissional")
+      .eq("suspenso", false)
       .order("pontos_ajudou", { ascending: false });
 
     const { data: conteudosAprovados } = await supabase

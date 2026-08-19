@@ -27,7 +27,7 @@ import BottomNav from './components/BottomNav'
 import './styles/global.css'
 
 function AppRoutes() {
-  const { user, loading, isPremium } = useAuth()
+  const { user, perfil, loading, isPremium, sair } = useAuth()
 
   if (loading) {
     return (
@@ -44,6 +44,20 @@ function AppRoutes() {
           <Route path="/sobre" element={<Sobre />} />
           <Route path="*" element={<Login />} />
         </Routes>
+      </div>
+    )
+  }
+
+  if (perfil?.suspenso) {
+    return (
+      <div className="app-layout">
+        <div className="page-content">
+          <h2 className="page-title">Conta suspensa</h2>
+          <p className="page-subtitle">
+            Sua conta na Plataforma Holos está temporariamente suspensa. Se você acredita que isso é um engano, entre em contato com a gente.
+          </p>
+          <button className="btn btn-outline" onClick={sair} style={{ marginTop: 16 }}>Sair</button>
+        </div>
       </div>
     )
   }

@@ -30,6 +30,9 @@ export default function PainelAdmin() {
   const [produtosLoja, setProdutosLoja] = useState([]);
   const [formLoja, setFormLoja] = useState({ titulo: "", descricao: "", categoria: "livros", link_afiliado: "", imagem_url: "", destaque: "" });
   const [solicitacoesMatch, setSolicitacoesMatch] = useState([]);
+  const [buscaPerfil, setBuscaPerfil] = useState("");
+  const [resultadosBusca, setResultadosBusca] = useState([]);
+  const [buscando, setBuscando] = useState(false);
   const [mensagemAcao, setMensagemAcao] = useState(null);
 
   async function carregarTudo() {
@@ -189,6 +192,34 @@ export default function PainelAdmin() {
     await supabase.from("loja_holos").delete().eq("id", id);
     setMensagemAcao(`"${titulo}" removido da Loja.`);
     carregarTudo();
+  }
+
+  async function buscarPerfis(e) {
+    e.preventDefault();
+    if (!buscaPerfil.trim()) return;
+    setBuscando(true);
+    const { data } = await supabase
+      .from("perfis")
+      .select("id, nome, email, papel, plano, suspenso")
+      .ilike("nome", `%${buscaPerfil.trim()}%`)
+      .limit(10);
+    setResultadosBusca(data || []);
+    setBuscando(false);
+  }
+
+  async function rebaixarProfissional(p) {
+    if (!window.confirm(`Rebaixar ${p.nome} de Profissional pra Usuário?`)) return;
+    await supabase.from("perfis").update({ papel: "Usuario" }).eq("id", p.id);
+    setMensagemAcao(`${p.nome} rebaixado pra Usuário.`);
+    setResultadosBusca((prev) => prev.map((x) => (x.id === p.id ? { ...x, papel: "Usuario" } : x)));
+  }
+
+  async function alternarSuspensao(p) {
+    const novoValor = !p.suspenso;
+    if (!window.confirm(`${novoValor ? "Suspender" : "Reativar"} a conta de ${p.nome}?`)) return;
+    await supabase.from("perfis").update({ suspenso: novoValor }).eq("id", p.id);
+    setMensagemAcao(`${p.nome} ${novoValor ? "suspenso" : "reativado"}.`);
+    setResultadosBusca((prev) => prev.map((x) => (x.id === p.id ? { ...x, suspenso: novoValor } : x)));
   }
 
   async function avancarSolicitacao(s, novoStatus) {
@@ -440,6 +471,41 @@ export default function PainelAdmin() {
         </div>
         <button className="btn btn-gold" type="submit">Cadastrar produto</button>
       </form>
+
+      <div className="divider" />
+
+      <p className="section-label">Gestão de Profissionais e Usuários</p>
+      <form onSubmit={buscarPerfis} style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <input
+          className="input"
+          style={{ flex: 1 }}
+          value={buscaPerfil}
+          onChange={(e) => setBuscaPerfil(e.target.value)}
+          placeholder="Buscar por nome..."
+        />
+        <button className="btn btn-outline btn-sm" type="submit" disabled={buscando}>
+          {buscando ? "..." : "Buscar"}
+        </button>
+      </form>
+
+      {resultadosBusca.map((p) => (
+        <div className="card" key={p.id} style={{ marginBottom: 8 }}>
+          <p style={{ fontWeight: 500, fontSize: 14 }}>
+            {p.nome} {p.suspenso && <span className="badge-admin" style={{ fontSize: 10, marginLeft: 6 }}>suspenso</span>}
+          </p>
+          <p className="page-subtitle" style={{ fontSize: 12 }}>{p.email} · papel: {p.papel} · plano: {p.plano}</p>
+          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+            {p.papel === "Profissional" && (
+              <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => rebaixarProfissional(p)}>
+                Rebaixar pra Usuário
+              </button>
+            )}
+            <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => alternarSuspensao(p)}>
+              {p.suspenso ? "Reativar" : "Suspender"}
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
