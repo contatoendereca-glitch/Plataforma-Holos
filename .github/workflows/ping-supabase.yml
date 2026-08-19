@@ -2,16 +2,21 @@ name: Ping Supabase (evitar pausa)
 
 on:
   schedule:
-    - cron: '0 12 */3 * *'   # a cada 3 dias, meio-dia UTC
-  workflow_dispatch:          # permite rodar manualmente também
+    - cron: '0 12 */2 * *'   # a cada 2 dias, meio-dia UTC
+  workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: https://zrcdxzadhquijqpyandu.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyY2R4emFkaHF1aWpxcHlhbmR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxOTQxMTEsImV4cCI6MjEwMDc3MDExMX0.HU7xP2avhWfQ9V5xTQ91H7LYJj-PQ8fs6BgaMEbBRGw
         run: |
-          curl -s -o /dev/null -w "%{http_code}" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/dores?select=id&limit=1"
+          CODE=$(curl -s -o /tmp/resp.txt -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/dores?select=id&limit=1")
+          echo "HTTP status: $CODE"
+          cat /tmp/resp.txt
