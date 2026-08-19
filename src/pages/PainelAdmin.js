@@ -27,6 +27,8 @@ export default function PainelAdmin() {
 
   const [formRoda, setFormRoda] = useState({ titulo: "", descricao: "", link_meet: "", data_hora: "" });
   const [formClube, setFormClube] = useState({ livro_titulo: "", livro_autor: "", descricao: "", link_grupo: "", data_encontro: "" });
+  const [produtosLoja, setProdutosLoja] = useState([]);
+  const [formLoja, setFormLoja] = useState({ titulo: "", descricao: "", categoria: "livros", link_afiliado: "", imagem_url: "", destaque: "" });
   const [mensagemAcao, setMensagemAcao] = useState(null);
 
   async function carregarTudo() {
@@ -46,6 +48,7 @@ export default function PainelAdmin() {
       rodaFuturaRes,
       premiumRes,
       avaliacoesRes,
+      produtosLojaRes,
     ] = await Promise.all([
       supabase.from("reflexoes_diarias").select("id", { count: "exact", head: true }).eq("ativo", true),
       supabase.from("conteudos").select("id, titulo, formato, plano_minimo, autor_id, criado_em").eq("status", "Pendente").order("criado_em", { ascending: false }),
@@ -56,6 +59,7 @@ export default function PainelAdmin() {
       supabase.from("rodas_holos").select("id").gte("data_hora", new Date().toISOString()).limit(1),
       supabase.from("perfis").select("id, nome").eq("plano", "Premium"),
       supabase.from("avaliacoes_evolutivas").select("usuario_id, entregue_em"),
+      supabase.from("loja_holos").select("id, titulo, descricao, categoria, link_afiliado, imagem_url, destaque, criado_em").order("criado_em", { ascending: false }),
     ]);
 
     // avaliação evolutiva atrasada: premium sem avaliação nos últimos 90 dias
@@ -84,6 +88,7 @@ export default function PainelAdmin() {
 
     setCandidaturas(candidaturasRes.data || []);
     setConteudosPend(conteudosPendRes.data || []);
+    setProdutosLoja(produtosLojaRes.data || []);
     setCarregando(false);
   }
 
@@ -152,6 +157,29 @@ export default function PainelAdmin() {
     );
     setFormClube({ livro_titulo: "", livro_autor: "", descricao: "", link_grupo: "", data_encontro: "" });
     setMensagemAcao("Clube Holos deste mês cadastrado/atualizado.");
+    carregarTudo();
+  }
+
+  async function cadastrarProduto(e) {
+    e.preventDefault();
+    if (!formLoja.titulo || !formLoja.link_afiliado) return;
+    await supabase.from("loja_holos").insert({
+      titulo: formLoja.titulo,
+      descricao: formLoja.descricao || null,
+      categoria: formLoja.categoria,
+      link_afiliado: formLoja.link_afiliado,
+      imagem_url: formLoja.imagem_url || null,
+      destaque: formLoja.destaque || null,
+    });
+    setFormLoja({ titulo: "", descricao: "", categoria: "livros", link_afiliado: "", imagem_url: "", destaque: "" });
+    setMensagemAcao("Produto cadastrado na Loja.");
+    carregarTudo();
+  }
+
+  async function excluirProduto(id, titulo) {
+    if (!window.confirm(`Remover "${titulo}" da Loja?`)) return;
+    await supabase.from("loja_holos").delete().eq("id", id);
+    setMensagemAcao(`"${titulo}" removido da Loja.`);
     carregarTudo();
   }
 
@@ -295,6 +323,72 @@ export default function PainelAdmin() {
           <input className="input" type="datetime-local" value={formClube.data_encontro} onChange={(e) => setFormClube({ ...formClube, data_encontro: e.target.value })} />
         </div>
         <button className="btn btn-gold" type="submit">Salvar Clube do mês</button>
+      </form>
+
+      <div className="divider" />
+
+      <p className="section-label">Produtos da Loja</p>
+      {produtosLoja.length === 0 ? (
+        <p className="page-subtitle" style={{ marginBottom: 16 }}>Nenhum produto cadastrado ainda.</p>
+      ) : (
+        produtosLoja.map((p) => (
+          <div className="card" key={p.id} style={{ marginBottom: 8 }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              {p.imagem_url ? (
+                <img src={p.imagem_url} alt={p.titulo} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover" }} />
+              ) : (
+                <div style={{ width: 40, height: 40, borderRadius: 8, background: "var(--bg-card-soft)" }} />
+              )}
+              <div style={{ flex: 1 }}>
+                <p style={{ fontWeight: 500, fontSize: 14, margin: 0 }}>{p.titulo}</p>
+                <p className="page-subtitle" style={{ fontSize: 12, margin: 0 }}>
+                  {p.categoria}{p.destaque ? ` · ${p.destaque === "promocao" ? "Promoção" : "Novidade"}` : ""}
+                </p>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <a className="btn btn-outline btn-sm" style={{ flex: 1, textAlign: "center" }} href={p.link_afiliado} target="_blank" rel="noreferrer">Ver link</a>
+              <button className="btn btn-outline btn-sm" style={{ flex: 1, color: "var(--danger, #c0392b)" }} onClick={() => excluirProduto(p.id, p.titulo)}>Remover</button>
+            </div>
+          </div>
+        ))
+      )}
+
+      <form onSubmit={cadastrarProduto} style={{ marginTop: 12 }}>
+        <div className="input-group">
+          <label className="input-label">Título do produto</label>
+          <input className="input" value={formLoja.titulo} onChange={(e) => setFormLoja({ ...formLoja, titulo: e.target.value })} />
+        </div>
+        <div className="input-group">
+          <label className="input-label">Descrição</label>
+          <input className="input" value={formLoja.descricao} onChange={(e) => setFormLoja({ ...formLoja, descricao: e.target.value })} />
+        </div>
+        <div className="input-group">
+          <label className="input-label">Categoria</label>
+          <select className="input" value={formLoja.categoria} onChange={(e) => setFormLoja({ ...formLoja, categoria: e.target.value })}>
+            <option value="livros">Livros</option>
+            <option value="papelaria">Papelaria</option>
+            <option value="eletronicos">Eletrônicos</option>
+            <option value="ambiente">Ambiente</option>
+          </select>
+        </div>
+        <div className="input-group">
+          <label className="input-label">Link de afiliado</label>
+          <input className="input" value={formLoja.link_afiliado} onChange={(e) => setFormLoja({ ...formLoja, link_afiliado: e.target.value })} placeholder="https://..." />
+        </div>
+        <div className="input-group">
+          <label className="input-label">URL da imagem (opcional)</label>
+          <input className="input" value={formLoja.imagem_url} onChange={(e) => setFormLoja({ ...formLoja, imagem_url: e.target.value })} placeholder="https://..." />
+        </div>
+        <div className="input-group">
+          <label className="input-label">Destaque (opcional)</label>
+          <select className="input" value={formLoja.destaque} onChange={(e) => setFormLoja({ ...formLoja, destaque: e.target.value })}>
+            <option value="">Nenhum</option>
+            <option value="promocao">Promoção</option>
+            <option value="novidade">Novidade</option>
+          </select>
+        </div>
+        <button className="btn btn-gold" type="submit">Cadastrar produto</button>
       </form>
     </div>
   );
