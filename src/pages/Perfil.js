@@ -52,6 +52,37 @@ export default function Perfil() {
     }
   }
 
+  async function baixarMeusDados() {
+    const [checkins, gratidoes, diario, matches, avaliacoes] = await Promise.all([
+      supabase.from("checkins").select("*").eq("perfil_id", perfil.id),
+      supabase.from("gratidoes").select("*").eq("usuario_id", perfil.id),
+      supabase.from("diario_holos").select("*").eq("usuario_id", perfil.id),
+      supabase.from("matches").select("*").eq("usuario_id", perfil.id),
+      supabase.from("avaliacoes_evolutivas").select("*").eq("usuario_id", perfil.id),
+    ]);
+    const pacote = {
+      perfil: { nome: perfil.nome, email: perfil.email, papel: perfil.papel, plano: perfil.plano },
+      checkins: checkins.data || [],
+      gratidoes: gratidoes.data || [],
+      diario_holos: diario.data || [],
+      matches: matches.data || [],
+      avaliacoes_evolutivas: avaliacoes.data || [],
+    };
+    const blob = new Blob([JSON.stringify(pacote, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "meus-dados-holos.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function solicitarExclusao() {
+    if (!window.confirm("Confirma o pedido de exclusão da sua conta? A equipe Holos vai processar em breve e isso não pode ser desfeito.")) return;
+    await supabase.from("perfis").update({ exclusao_solicitada: true }).eq("id", perfil.id);
+    alert("Pedido enviado. Sua conta será excluída em breve pela equipe Holos.");
+  }
+
   function compartilharApp() {
     const mensagem = `Tô usando a Plataforma Holos pra cuidar de mim em Corpo, Alma e Espírito. Bora comigo?\n\n📲 https://plataforma-holos.vercel.app`;
     window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`, "_blank");
@@ -146,6 +177,18 @@ export default function Perfil() {
       </div>
       <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/sobre")}>
         <span className="metrica-label">Sobre a Holos</span>
+        <span className="metrica-valor">›</span>
+      </div>
+      <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/privacidade")}>
+        <span className="metrica-label">Política de Privacidade</span>
+        <span className="metrica-valor">›</span>
+      </div>
+      <div className="metrica-row" style={{ cursor: "pointer" }} onClick={baixarMeusDados}>
+        <span className="metrica-label">Baixar meus dados</span>
+        <span className="metrica-valor">›</span>
+      </div>
+      <div className="metrica-row" style={{ cursor: "pointer" }} onClick={solicitarExclusao}>
+        <span className="metrica-label" style={{ color: "var(--danger)" }}>Excluir minha conta</span>
         <span className="metrica-valor">›</span>
       </div>
 

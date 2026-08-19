@@ -12,6 +12,7 @@ export default function Login() {
   const [carregando, setCarregando] = useState(false)
   const [avisoCadastro, setAvisoCadastro] = useState(false)
   const [avisoRecuperacao, setAvisoRecuperacao] = useState(false)
+  const [aceitouPrivacidade, setAceitouPrivacidade] = useState(false)
 
   async function enviar(e) {
     e.preventDefault()
@@ -22,6 +23,11 @@ export default function Login() {
       const { error } = await login(email, senha)
       if (error) setErro('E-mail ou senha inválidos.')
     } else if (modo === 'cadastro') {
+      if (!aceitouPrivacidade) {
+        setErro('Você precisa aceitar a Política de Privacidade pra criar sua conta.')
+        setCarregando(false)
+        return
+      }
       const { error } = await cadastrar(nome, email, senha)
       if (error) setErro(error.message)
       else setAvisoCadastro(true)
@@ -61,6 +67,24 @@ export default function Login() {
           <input className="input" type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} required />
           {modo !== 'recuperar' && (
             <input className="input" type="password" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} required minLength={6} />
+          )}
+
+          {modo === 'cadastro' && (
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={aceitouPrivacidade}
+                onChange={(e) => setAceitouPrivacidade(e.target.checked)}
+                style={{ marginTop: 2 }}
+              />
+              <span>
+                Li e aceito a{' '}
+                <a href="/privacidade" target="_blank" rel="noreferrer" style={{ color: 'var(--gold)' }}>
+                  Política de Privacidade
+                </a>{' '}
+                da Holos.
+              </span>
+            </label>
           )}
 
           {erro && <p style={{ color: 'var(--danger)', fontSize: '13px', marginBottom: '10px' }}>{erro}</p>}

@@ -31,6 +31,7 @@ export default function PainelAdmin() {
   const [formLoja, setFormLoja] = useState({ titulo: "", descricao: "", categoria: "livros", link_afiliado: "", imagem_url: "", destaque: "" });
   const [solicitacoesMatch, setSolicitacoesMatch] = useState([]);
   const [cancelamentos, setCancelamentos] = useState([]);
+  const [exclusoes, setExclusoes] = useState([]);
   const [buscaPerfil, setBuscaPerfil] = useState("");
   const [resultadosBusca, setResultadosBusca] = useState([]);
   const [buscando, setBuscando] = useState(false);
@@ -56,6 +57,7 @@ export default function PainelAdmin() {
       produtosLojaRes,
       solicitacoesMatchRes,
       cancelamentosRes,
+      exclusoesRes,
     ] = await Promise.all([
       supabase.from("reflexoes_diarias").select("id", { count: "exact", head: true }).eq("ativo", true),
       supabase.from("conteudos").select("id, titulo, formato, plano_minimo, autor_id, criado_em").eq("status", "Pendente").order("criado_em", { ascending: false }),
@@ -73,6 +75,7 @@ export default function PainelAdmin() {
         .neq("status", "pago")
         .order("criado_em", { ascending: true }),
       supabase.from("assinaturas").select("id, perfil_id, valor_pago, perfis:perfil_id(nome, email)").eq("status", "cancelamento_solicitado"),
+      supabase.from("perfis").select("id, nome, email").eq("exclusao_solicitada", true),
     ]);
 
     // avaliação evolutiva atrasada: premium sem avaliação nos últimos 90 dias
@@ -104,6 +107,7 @@ export default function PainelAdmin() {
     setProdutosLoja(produtosLojaRes.data || []);
     setSolicitacoesMatch(solicitacoesMatchRes.data || []);
     setCancelamentos(cancelamentosRes.data || []);
+    setExclusoes(exclusoesRes.data || []);
     setCarregando(false);
   }
 
@@ -226,6 +230,13 @@ export default function PainelAdmin() {
     setResultadosBusca((prev) => prev.map((x) => (x.id === p.id ? { ...x, suspenso: novoValor } : x)));
   }
 
+  async function marcarExclusaoProcessada(p) {
+    if (!window.confirm(`Confirma que já excluiu manualmente os dados de ${p.nome} no Supabase (Table Editor + Authentication)?`)) return;
+    await supabase.from("perfis").update({ exclusao_solicitada: false }).eq("id", p.id);
+    setMensagemAcao(`Pedido de exclusão de ${p.nome} marcado como processado.`);
+    carregarTudo();
+  }
+
   async function confirmarCancelamento(a) {
     if (!window.confirm(`Confirma que já cancelou a cobrança de ${a.perfis?.nome} no Mercado Pago?`)) return;
     await supabase.from("assinaturas").update({ status: "cancelada" }).eq("id", a.id);
@@ -318,6 +329,26 @@ export default function PainelAdmin() {
           </div>
           );
         })
+      )}
+
+      <div className="divider" />
+
+      <p className="section-label">Pedidos de exclusão de conta (LGPD)</p>
+      {exclusoes.length === 0 ? (
+        <p className="page-subtitle" style={{ marginBottom: 16 }}>Nenhum pedido pendente.</p>
+      ) : (
+        exclusoes.map((p) => (
+          <div className="card" key={p.id} style={{ marginBottom: 8 }}>
+            <p style={{ fontWeight: 500, fontSize: 14 }}>{p.nome}</p>
+            <p className="page-subtitle" style={{ fontSize: 12 }}>{p.email}</p>
+            <p style={{ fontSize: 12, marginTop: 4, color: "var(--gold)" }}>
+              ⚠️ Exclua manualmente no Supabase (Table Editor: perfis e tabelas relacionadas + Authentication) antes de confirmar aqui.
+            </p>
+            <button className="btn btn-outline btn-sm" style={{ marginTop: 8 }} onClick={() => marcarExclusaoProcessada(p)}>
+              Marcar como processado
+            </button>
+          </div>
+        ))
       )}
 
       <div className="divider" />
