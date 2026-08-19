@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 const ATALHOS = [
   { to: '/registro', titulo: 'Registro rápido', desc: 'Gratidão · Diário Holos', icone: '🙏' },
@@ -9,10 +10,30 @@ const ATALHOS = [
   { to: '/store', titulo: 'Holos Store', desc: 'curadoria de produtos parceiros', icone: '🛍️' },
 ]
 
+function hojeISO() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 export default function ReflexaoDiaria() {
+  const { perfil } = useAuth()
   const [reflexao, setReflexao] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lendo, setLendo] = useState(false)
+  const [fezCheckinHoje, setFezCheckinHoje] = useState(true)
+
+  useEffect(() => { carregar() }, [])
+  useEffect(() => { if (perfil?.id) checarCheckinHoje() }, [perfil])
+
+  async function checarCheckinHoje() {
+    const { data } = await supabase
+      .from('checkins')
+      .select('id')
+      .eq('perfil_id', perfil.id)
+      .eq('data', hojeISO())
+      .maybeSingle()
+    setFezCheckinHoje(!!data)
+  }
 
   useEffect(() => { carregar() }, [])
 
@@ -50,6 +71,13 @@ export default function ReflexaoDiaria() {
   return (
     <div className="page-content" style={{ paddingTop: '40px' }}>
       <h2 className="page-title">Reflexão do Dia</h2>
+
+      {!fezCheckinHoje && (
+        <Link to="/checkin" className="card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', marginBottom: 16, borderColor: 'var(--gold)' }}>
+          <p style={{ margin: 0, fontSize: 14 }}>💛 Você ainda não fez seu check-in hoje. Que tal um minutinho agora?</p>
+        </Link>
+      )}
+
       <div className="card" style={{ padding: '28px 20px', textAlign: 'center' }}>
         <p style={{ fontSize: '17px', lineHeight: '1.6', fontStyle: 'italic' }}>
           {reflexao ? `"${reflexao.texto}"` : 'Nenhuma reflexão cadastrada ainda.'}

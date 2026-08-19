@@ -15,24 +15,34 @@ export default function Perfil() {
   const { perfil, isPremium, sair, carregarPerfil } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ checkins: 0, gratidoes: 0, diario: 0 });
+  const [assinatura, setAssinatura] = useState(null);
   const [editando, setEditando] = useState(false);
   const [nome, setNome] = useState(perfil?.nome || "");
 
   useEffect(() => {
     async function carregar() {
-      const [checkins, gratidoes, diario] = await Promise.all([
+      const [checkins, gratidoes, diario, assinaturaRes] = await Promise.all([
         supabase.from("checkins").select("id", { count: "exact", head: true }).eq("perfil_id", perfil.id),
         supabase.from("gratidoes").select("id", { count: "exact", head: true }).eq("usuario_id", perfil.id),
         supabase.from("diario_holos").select("id", { count: "exact", head: true }).eq("usuario_id", perfil.id),
+        supabase.from("assinaturas").select("id, status, valor_pago, criado_em").eq("perfil_id", perfil.id).order("criado_em", { ascending: false }).limit(1).maybeSingle(),
       ]);
       setStats({
         checkins: checkins.count || 0,
         gratidoes: gratidoes.count || 0,
         diario: diario.count || 0,
       });
+      setAssinatura(assinaturaRes.data || null);
     }
     if (perfil?.id) carregar();
   }, [perfil]);
+
+  async function solicitarCancelamento() {
+    if (!assinatura) return;
+    if (!window.confirm("Confirma o pedido de cancelamento? A equipe Holos vai processar em breve.")) return;
+    await supabase.from("assinaturas").update({ status: "cancelamento_solicitado" }).eq("id", assinatura.id);
+    setAssinatura((prev) => ({ ...prev, status: "cancelamento_solicitado" }));
+  }
 
   async function salvarNome() {
     const { error } = await supabase.from("perfis").update({ nome }).eq("id", perfil.id);
@@ -82,6 +92,30 @@ export default function Perfil() {
       </div>
 
       <div className="divider" />
+
+      {isPremium && assinatura && (
+        <>
+          <p className="section-label">Sua assinatura</p>
+          <div className="card" style={{ marginBottom: 14 }}>
+            <p style={{ margin: 0, fontSize: 14 }}>
+              Plano <strong>Premium</strong> · status: {assinatura.status === "cancelamento_solicitado" ? "cancelamento em análise" : assinatura.status}
+            </p>
+            {assinatura.valor_pago && (
+              <p className="page-subtitle" style={{ fontSize: 12, marginTop: 4 }}>último valor pago: R$ {assinatura.valor_pago}</p>
+            )}
+            {assinatura.status === "ativa" ? (
+              <button className="btn btn-outline btn-sm" style={{ marginTop: 10 }} onClick={solicitarCancelamento}>
+                Solicitar cancelamento
+              </button>
+            ) : assinatura.status === "cancelamento_solicitado" ? (
+              <p className="page-subtitle" style={{ fontSize: 12, marginTop: 10 }}>
+                Pedido recebido — a equipe Holos vai confirmar por e-mail em breve.
+              </p>
+            ) : null}
+          </div>
+          <div className="divider" />
+        </>
+      )}
 
       {perfil?.papel === "Admin" && (
         <div className="metrica-row" style={{ cursor: "pointer" }} onClick={() => navigate("/admin")}>

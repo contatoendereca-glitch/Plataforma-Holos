@@ -43,6 +43,11 @@ export function AuthProvider({ children }) {
     return { error }
   }
 
+  async function recuperarSenha(email) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    return { error }
+  }
+
   async function cadastrar(nome, email, senha) {
     const { error } = await supabase.auth.signUp({
       email,
@@ -59,7 +64,7 @@ export function AuthProvider({ children }) {
   const isPremium = perfil?.plano === 'Premium'
 
   return (
-    <AuthContext.Provider value={{ user, perfil, loading, isPremium, login, cadastrar, sair, carregarPerfil }}>
+    <AuthContext.Provider value={{ user, perfil, loading, isPremium, login, cadastrar, sair, carregarPerfil, recuperarSenha }}>
       {children}
     </AuthContext.Provider>
   )

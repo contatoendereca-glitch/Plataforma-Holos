@@ -30,6 +30,7 @@ export default function PainelAdmin() {
   const [produtosLoja, setProdutosLoja] = useState([]);
   const [formLoja, setFormLoja] = useState({ titulo: "", descricao: "", categoria: "livros", link_afiliado: "", imagem_url: "", destaque: "" });
   const [solicitacoesMatch, setSolicitacoesMatch] = useState([]);
+  const [cancelamentos, setCancelamentos] = useState([]);
   const [buscaPerfil, setBuscaPerfil] = useState("");
   const [resultadosBusca, setResultadosBusca] = useState([]);
   const [buscando, setBuscando] = useState(false);
@@ -54,6 +55,7 @@ export default function PainelAdmin() {
       avaliacoesRes,
       produtosLojaRes,
       solicitacoesMatchRes,
+      cancelamentosRes,
     ] = await Promise.all([
       supabase.from("reflexoes_diarias").select("id", { count: "exact", head: true }).eq("ativo", true),
       supabase.from("conteudos").select("id, titulo, formato, plano_minimo, autor_id, criado_em").eq("status", "Pendente").order("criado_em", { ascending: false }),
@@ -70,6 +72,7 @@ export default function PainelAdmin() {
         .select("id, status, criado_em, usuario:usuario_id(nome, email), profissional:profissional_id(nome)")
         .neq("status", "pago")
         .order("criado_em", { ascending: true }),
+      supabase.from("assinaturas").select("id, perfil_id, valor_pago, perfis:perfil_id(nome, email)").eq("status", "cancelamento_solicitado"),
     ]);
 
     // avaliação evolutiva atrasada: premium sem avaliação nos últimos 90 dias
@@ -100,6 +103,7 @@ export default function PainelAdmin() {
     setConteudosPend(conteudosPendRes.data || []);
     setProdutosLoja(produtosLojaRes.data || []);
     setSolicitacoesMatch(solicitacoesMatchRes.data || []);
+    setCancelamentos(cancelamentosRes.data || []);
     setCarregando(false);
   }
 
@@ -222,6 +226,14 @@ export default function PainelAdmin() {
     setResultadosBusca((prev) => prev.map((x) => (x.id === p.id ? { ...x, suspenso: novoValor } : x)));
   }
 
+  async function confirmarCancelamento(a) {
+    if (!window.confirm(`Confirma que já cancelou a cobrança de ${a.perfis?.nome} no Mercado Pago?`)) return;
+    await supabase.from("assinaturas").update({ status: "cancelada" }).eq("id", a.id);
+    await supabase.from("perfis").update({ plano: "Gratuito" }).eq("id", a.perfil_id);
+    setMensagemAcao(`Assinatura de ${a.perfis?.nome} cancelada.`);
+    carregarTudo();
+  }
+
   async function avancarSolicitacao(s, novoStatus) {
     await supabase.from("matches").update({ status: novoStatus }).eq("id", s.id);
     setMensagemAcao(`Solicitação de ${s.usuario?.nome || "usuário"} → ${novoStatus}.`);
@@ -306,6 +318,26 @@ export default function PainelAdmin() {
           </div>
           );
         })
+      )}
+
+      <div className="divider" />
+
+      <p className="section-label">Pedidos de cancelamento</p>
+      {cancelamentos.length === 0 ? (
+        <p className="page-subtitle" style={{ marginBottom: 16 }}>Nenhum pedido pendente.</p>
+      ) : (
+        cancelamentos.map((a) => (
+          <div className="card" key={a.id} style={{ marginBottom: 8 }}>
+            <p style={{ fontWeight: 500, fontSize: 14 }}>{a.perfis?.nome}</p>
+            <p className="page-subtitle" style={{ fontSize: 12 }}>{a.perfis?.email}</p>
+            <p style={{ fontSize: 12, marginTop: 4, color: "var(--gold)" }}>
+              ⚠️ Lembre-se de cancelar a cobrança recorrente no Mercado Pago antes de confirmar aqui.
+            </p>
+            <button className="btn btn-outline btn-sm" style={{ marginTop: 8 }} onClick={() => confirmarCancelamento(a)}>
+              Confirmar cancelamento
+            </button>
+          </div>
+        ))
       )}
 
       <div className="divider" />

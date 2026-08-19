@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import NavAcoes from "../components/NavAcoes";
 import { calcularSelo } from "../lib/selos";
 
+const TAGS_AVALIACAO = ["Acolhedor", "Pontual", "Esclarecedor", "Paciente", "Recomendo"];
+
 export default function Profissionais() {
   const { perfil, isPremium } = useAuth();
   const [profissionais, setProfissionais] = useState([]);
@@ -11,6 +13,8 @@ export default function Profissionais() {
   const [meusMatches, setMeusMatches] = useState({}); // profissional_id -> match row
   const [matchesEsteMes, setMatchesEsteMes] = useState(0);
   const [carregando, setCarregando] = useState(true);
+  const [avaliandoMatchId, setAvaliandoMatchId] = useState(null);
+  const [tagsSelecionadas, setTagsSelecionadas] = useState([]);
 
   async function carregar() {
     const { data } = await supabase
@@ -80,14 +84,20 @@ export default function Profissionais() {
     carregar();
   }
 
-  async function marcarAjudou(match) {
-    const { error: err1 } = await supabase.from("matches").update({ ajudou: true }).eq("id", match.id);
+  async function marcarAjudou(match, tags) {
+    const { error: err1 } = await supabase.from("matches").update({ ajudou: true, tags }).eq("id", match.id);
     if (err1) return;
 
     const profissional = profissionais.find((p) => p.id === match.profissional_id);
     const novoTotal = (profissional?.pontos_ajudou || 0) + 1;
     await supabase.from("perfis").update({ pontos_ajudou: novoTotal }).eq("id", match.profissional_id);
+    setAvaliandoMatchId(null);
+    setTagsSelecionadas([]);
     carregar();
+  }
+
+  function alternarTag(tag) {
+    setTagsSelecionadas((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
   }
 
   return (
@@ -140,10 +150,34 @@ export default function Profissionais() {
             {meuMatch && meuMatch.status === "aguardando_pagamento" && (
               <span className="badge-gratuito" style={{ fontSize: 11 }}>💳 aguardando confirmação de pagamento</span>
             )}
-            {meuMatch && meuMatch.status === "pago" && !meuMatch.ajudou && (
-              <button className="btn btn-outline btn-sm" onClick={() => marcarAjudou(meuMatch)}>
+            {meuMatch && meuMatch.status === "pago" && !meuMatch.ajudou && avaliandoMatchId !== meuMatch.id && (
+              <button className="btn btn-outline btn-sm" onClick={() => { setAvaliandoMatchId(meuMatch.id); setTagsSelecionadas([]); }}>
                 🤍 Isso me ajudou
               </button>
+            )}
+            {meuMatch && avaliandoMatchId === meuMatch.id && (
+              <div style={{ marginTop: 6 }}>
+                <p className="page-subtitle" style={{ fontSize: 11, marginBottom: 4 }}>Como foi? (opcional)</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
+                  {TAGS_AVALIACAO.map((tag) => (
+                    <span
+                      key={tag}
+                      onClick={() => alternarTag(tag)}
+                      className="badge-gratuito"
+                      style={{
+                        fontSize: 11,
+                        cursor: "pointer",
+                        opacity: tagsSelecionadas.includes(tag) ? 1 : 0.4,
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <button className="btn btn-gold btn-sm" onClick={() => marcarAjudou(meuMatch, tagsSelecionadas)}>
+                  Confirmar
+                </button>
+              </div>
             )}
             {meuMatch && meuMatch.status === "pago" && meuMatch.ajudou && (
               <span className="badge-gratuito">💛 você marcou que ajudou</span>
