@@ -100,6 +100,11 @@ export default function PainelProfissional() {
   const totalMatches = matches.length;
   const matchesAjudou = matches.filter((m) => m.ajudou).length;
   const conteudosAprovados = conteudos.filter((c) => c.status === "Aprovado").length;
+  const META_CONTEUDOS_MES = 4;
+  const inicioMes = new Date();
+  inicioMes.setDate(1);
+  inicioMes.setHours(0, 0, 0, 0);
+  const conteudosEsteMes = conteudos.filter((c) => new Date(c.criado_em) >= inicioMes).length;
   const pontosAjudou = perfil?.pontos_ajudou || 0;
   const seloAtual = calcularSelo(conteudosAprovados, pontosAjudou);
   const seloSeguinte = proximoSelo(seloAtual);
@@ -144,6 +149,17 @@ export default function PainelProfissional() {
         {!seloSeguinte && seloAtual && (
           <p className="page-subtitle" style={{ fontSize: 12, margin: 0 }}>Você chegou ao nível máximo. 🎉</p>
         )}
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <p className="section-label">Meta de conteúdo este mês</p>
+        <p style={{ fontSize: 14, margin: 0 }}>
+          {conteudosEsteMes} de {META_CONTEUDOS_MES} conteúdos enviados
+          {conteudosEsteMes >= META_CONTEUDOS_MES ? " ✅" : ""}
+        </p>
+        <p className="page-subtitle" style={{ fontSize: 12, marginTop: 4, marginBottom: 0 }}>
+          manter o ritmo de envio ajuda a manter seu selo ativo e visível na vitrine
+        </p>
       </div>
 
       <div className="divider" />

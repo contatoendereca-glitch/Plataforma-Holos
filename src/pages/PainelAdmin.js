@@ -54,7 +54,7 @@ export default function PainelAdmin() {
     ] = await Promise.all([
       supabase.from("reflexoes_diarias").select("id", { count: "exact", head: true }).eq("ativo", true),
       supabase.from("conteudos").select("id, titulo, formato, plano_minimo, autor_id, criado_em").eq("status", "Pendente").order("criado_em", { ascending: false }),
-      supabase.from("candidaturas_profissional").select("id, area_atuacao, email, whatsapp, credencial_link, mensagem, criado_em, perfil_id, perfis:perfil_id(nome)").eq("status", "Pendente").order("criado_em", { ascending: false }),
+      supabase.from("candidaturas_profissional").select("id, area_atuacao, email, whatsapp, tipo_documento, credencial_link, mensagem, criado_em, perfil_id, perfis:perfil_id(nome)").eq("status", "Pendente").order("criado_em", { ascending: true }),
       supabase.from("perfis").select("id", { count: "exact", head: true }).gte("criado_em", diasAtras(7)),
       supabase.from("assinaturas").select("id, perfil_id, status, valor_pago, criado_em, perfis:perfil_id(nome)").eq("status", "ativa").order("criado_em", { ascending: false }).limit(5),
       supabase.from("clube_holos").select("id").eq("mes_referencia", primeiroDiaMesISO).maybeSingle(),
@@ -252,11 +252,16 @@ export default function PainelAdmin() {
       {candidaturas.length === 0 ? (
         <p className="page-subtitle" style={{ marginBottom: 16 }}>Nenhuma pendente.</p>
       ) : (
-        candidaturas.map((c) => (
+        candidaturas.map((c) => {
+          const diasEsperando = Math.floor((Date.now() - new Date(c.criado_em).getTime()) / 86400000);
+          return (
           <div className="card" key={c.id} style={{ marginBottom: 8 }}>
             <p style={{ fontWeight: 500, fontSize: 14 }}>{c.perfis?.nome}</p>
-            <p className="page-subtitle" style={{ fontSize: 12 }}>{c.area_atuacao}</p>
+            <p className="page-subtitle" style={{ fontSize: 12 }}>{c.area_atuacao} · doc: {c.tipo_documento || "não informado"}</p>
             <p className="page-subtitle" style={{ fontSize: 12 }}>{c.email} · {c.whatsapp}</p>
+            <p className="page-subtitle" style={{ fontSize: 12, color: diasEsperando >= 2 ? "var(--gold)" : undefined }}>
+              ⏱️ esperando há {diasEsperando === 0 ? "menos de 1 dia" : `${diasEsperando} dia(s)`}
+            </p>
             {c.credencial_link && (
               <p className="page-subtitle" style={{ fontSize: 12 }}>
                 <a href={c.credencial_link} target="_blank" rel="noreferrer" style={{ color: "var(--gold)" }}>ver credencial</a>
@@ -268,7 +273,8 @@ export default function PainelAdmin() {
               <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => rejeitarCandidatura(c)}>Rejeitar</button>
             </div>
           </div>
-        ))
+          );
+        })
       )}
 
       <div className="divider" />

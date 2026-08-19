@@ -10,7 +10,7 @@ export default function SejaProfissional() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState(null);
 
-  const [form, setForm] = useState({ area_atuacao: "", email: perfil?.email || "", whatsapp: "", credencial_link: "", mensagem: "" });
+  const [form, setForm] = useState({ area_atuacao: "", email: perfil?.email || "", whatsapp: "", tipo_documento: "CRP", credencial_link: "", mensagem: "" });
 
   useEffect(() => {
     async function carregar() {
@@ -44,6 +44,7 @@ export default function SejaProfissional() {
       area_atuacao: form.area_atuacao,
       email: form.email || null,
       whatsapp: form.whatsapp || null,
+      tipo_documento: form.tipo_documento,
       credencial_link: form.credencial_link || null,
       mensagem: form.mensagem || null,
     });
@@ -129,7 +130,20 @@ export default function SejaProfissional() {
         </div>
 
         <div className="input-group">
-          <label className="input-label">Link de credencial (CRP, Instagram profissional, LinkedIn...)</label>
+          <label className="input-label">Tipo de documentação</label>
+          <select
+            className="input"
+            value={form.tipo_documento}
+            onChange={(e) => atualizarCampo("tipo_documento", e.target.value)}
+          >
+            <option value="CRP">CRP (psicólogo)</option>
+            <option value="Certificado">Certificado de formação (psicanalista, terapeuta)</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">Link da credencial (opcional, ou envie por e-mail depois)</label>
           <input
             className="input"
             value={form.credencial_link}
@@ -137,6 +151,10 @@ export default function SejaProfissional() {
             placeholder="https://..."
           />
         </div>
+
+        <p className="page-subtitle" style={{ fontSize: 12, marginTop: -6 }}>
+          Depois de enviar, mande uma foto ou PDF do seu {form.tipo_documento === "CRP" ? "CRP" : "certificado"} pro e-mail da Holos pra agilizar a aprovação.
+        </p>
 
         <div className="input-group">
           <label className="input-label">Quer contar mais alguma coisa? (opcional)</label>
