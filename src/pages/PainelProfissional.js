@@ -34,7 +34,7 @@ export default function PainelProfissional() {
     const [matchesRes, conteudosRes, doresRes, instanciasRes] = await Promise.all([
       supabase
         .from("matches")
-        .select("id, criado_em, ajudou, usuario:usuario_id(nome)")
+        .select("id, criado_em, ajudou, status, usuario:usuario_id(nome)")
         .eq("profissional_id", perfil.id)
         .order("criado_em", { ascending: false }),
       supabase
@@ -154,18 +154,30 @@ export default function PainelProfissional() {
       ) : matches.length === 0 ? (
         <p className="page-subtitle" style={{ marginBottom: 16 }}>Ninguém solicitou match ainda.</p>
       ) : (
-        matches.map((m) => (
-          <div className="pro-card" key={m.id} style={{ marginBottom: 8 }}>
-            <div className="avatar">{(m.usuario?.nome || "?").slice(0, 2).toUpperCase()}</div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 500, fontSize: 13, marginBottom: 2 }}>{m.usuario?.nome || "Usuário"}</p>
-              <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>
-                {new Date(m.criado_em).toLocaleDateString("pt-BR")}
-              </p>
+        matches.map((m) => {
+          const liberado = m.status === "pago";
+          const rotulos = {
+            pendente: "⏳ aguardando sua aprovação no Admin",
+            aprovado: "📧 aguardando confirmação do usuário",
+            confirmado: "📩 aguardando boleto",
+            aguardando_pagamento: "💳 aguardando confirmação de pagamento",
+            pago: "✅ contato liberado",
+          };
+          return (
+            <div className="pro-card" key={m.id} style={{ marginBottom: 8 }}>
+              <div className="avatar">{liberado ? (m.usuario?.nome || "?").slice(0, 2).toUpperCase() : "🔒"}</div>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontWeight: 500, fontSize: 13, marginBottom: 2 }}>
+                  {liberado ? (m.usuario?.nome || "Usuário") : "Solicitação em andamento"}
+                </p>
+                <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>
+                  {rotulos[m.status] || m.status} · {new Date(m.criado_em).toLocaleDateString("pt-BR")}
+                </p>
+              </div>
+              {m.ajudou && <span className="badge-gratuito">💛 ajudou</span>}
             </div>
-            {m.ajudou && <span className="badge-gratuito">💛 ajudou</span>}
-          </div>
-        ))
+          );
+        })
       )}
 
       <div className="divider" />

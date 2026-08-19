@@ -29,6 +29,7 @@ export default function PainelAdmin() {
   const [formClube, setFormClube] = useState({ livro_titulo: "", livro_autor: "", descricao: "", link_grupo: "", data_encontro: "" });
   const [produtosLoja, setProdutosLoja] = useState([]);
   const [formLoja, setFormLoja] = useState({ titulo: "", descricao: "", categoria: "livros", link_afiliado: "", imagem_url: "", destaque: "" });
+  const [solicitacoesMatch, setSolicitacoesMatch] = useState([]);
   const [mensagemAcao, setMensagemAcao] = useState(null);
 
   async function carregarTudo() {
@@ -49,6 +50,7 @@ export default function PainelAdmin() {
       premiumRes,
       avaliacoesRes,
       produtosLojaRes,
+      solicitacoesMatchRes,
     ] = await Promise.all([
       supabase.from("reflexoes_diarias").select("id", { count: "exact", head: true }).eq("ativo", true),
       supabase.from("conteudos").select("id, titulo, formato, plano_minimo, autor_id, criado_em").eq("status", "Pendente").order("criado_em", { ascending: false }),
@@ -60,6 +62,11 @@ export default function PainelAdmin() {
       supabase.from("perfis").select("id, nome").eq("plano", "Premium"),
       supabase.from("avaliacoes_evolutivas").select("usuario_id, entregue_em"),
       supabase.from("loja_holos").select("id, titulo, descricao, categoria, link_afiliado, imagem_url, destaque, criado_em").order("criado_em", { ascending: false }),
+      supabase
+        .from("matches")
+        .select("id, status, criado_em, usuario:usuario_id(nome, email), profissional:profissional_id(nome)")
+        .neq("status", "pago")
+        .order("criado_em", { ascending: true }),
     ]);
 
     // avaliação evolutiva atrasada: premium sem avaliação nos últimos 90 dias
@@ -89,6 +96,7 @@ export default function PainelAdmin() {
     setCandidaturas(candidaturasRes.data || []);
     setConteudosPend(conteudosPendRes.data || []);
     setProdutosLoja(produtosLojaRes.data || []);
+    setSolicitacoesMatch(solicitacoesMatchRes.data || []);
     setCarregando(false);
   }
 
@@ -183,6 +191,12 @@ export default function PainelAdmin() {
     carregarTudo();
   }
 
+  async function avancarSolicitacao(s, novoStatus) {
+    await supabase.from("matches").update({ status: novoStatus }).eq("id", s.id);
+    setMensagemAcao(`Solicitação de ${s.usuario?.nome || "usuário"} → ${novoStatus}.`);
+    carregarTudo();
+  }
+
   if (carregando) {
     return (
       <div className="page-content">
@@ -255,6 +269,36 @@ export default function PainelAdmin() {
             </div>
           </div>
         ))
+      )}
+
+      <div className="divider" />
+
+      <p className="section-label">Solicitações de Match</p>
+      {solicitacoesMatch.length === 0 ? (
+        <p className="page-subtitle" style={{ marginBottom: 16 }}>Nenhuma em andamento.</p>
+      ) : (
+        solicitacoesMatch.map((s) => {
+          const acoes = {
+            pendente: { label: "Aprovar", novo: "aprovado", lembrete: "📧 Envie o e-mail 1: como funciona, valor da consulta, pagamento fora da plataforma." },
+            aprovado: { label: null, novo: null, lembrete: "⏳ Aguardando o usuário confirmar interesse pelo app." },
+            confirmado: { label: "Marcar boleto enviado", novo: "aguardando_pagamento", lembrete: "📩 Gere e envie o boleto pro usuário." },
+            aguardando_pagamento: { label: "Marcar pago e liberar contato", novo: "pago", lembrete: "💳 Confirme o pagamento antes de clicar — isso libera o contato do profissional pro usuário." },
+          };
+          const acao = acoes[s.status] || {};
+          return (
+            <div className="card" key={s.id} style={{ marginBottom: 8 }}>
+              <p style={{ fontWeight: 500, fontSize: 14 }}>{s.usuario?.nome} → {s.profissional?.nome}</p>
+              <p className="page-subtitle" style={{ fontSize: 12 }}>{s.usuario?.email}</p>
+              <p className="page-subtitle" style={{ fontSize: 12 }}>status: {s.status} · {new Date(s.criado_em).toLocaleDateString("pt-BR")}</p>
+              {acao.lembrete && <p style={{ fontSize: 12, marginTop: 4, color: "var(--gold)" }}>{acao.lembrete}</p>}
+              {acao.label && (
+                <button className="btn btn-gold btn-sm" style={{ marginTop: 8 }} onClick={() => avancarSolicitacao(s, acao.novo)}>
+                  {acao.label}
+                </button>
+              )}
+            </div>
+          );
+        })
       )}
 
       <div className="divider" />

@@ -46,7 +46,7 @@ export default function Profissionais() {
 
     const { data: matches } = await supabase
       .from("matches")
-      .select("id, profissional_id, ajudou, criado_em")
+      .select("id, profissional_id, ajudou, criado_em, status")
       .eq("usuario_id", perfil.id);
 
     const mapa = {};
@@ -72,6 +72,11 @@ export default function Profissionais() {
       profissional_id: profissionalId,
     });
     if (!error) carregar();
+  }
+
+  async function confirmarInteresse(match) {
+    await supabase.from("matches").update({ status: "confirmado" }).eq("id", match.id);
+    carregar();
   }
 
   async function marcarAjudou(match) {
@@ -120,12 +125,26 @@ export default function Profissionais() {
                 Solicitar match
               </button>
             )}
-            {meuMatch && !meuMatch.ajudou && (
+            {meuMatch && meuMatch.status === "pendente" && (
+              <span className="badge-gratuito" style={{ fontSize: 11 }}>⏳ aguardando aprovação</span>
+            )}
+            {meuMatch && meuMatch.status === "aprovado" && (
+              <button className="btn btn-gold btn-sm" onClick={() => confirmarInteresse(meuMatch)}>
+                Confirmar interesse
+              </button>
+            )}
+            {meuMatch && meuMatch.status === "confirmado" && (
+              <span className="badge-gratuito" style={{ fontSize: 11 }}>📩 aguardando boleto</span>
+            )}
+            {meuMatch && meuMatch.status === "aguardando_pagamento" && (
+              <span className="badge-gratuito" style={{ fontSize: 11 }}>💳 aguardando confirmação de pagamento</span>
+            )}
+            {meuMatch && meuMatch.status === "pago" && !meuMatch.ajudou && (
               <button className="btn btn-outline btn-sm" onClick={() => marcarAjudou(meuMatch)}>
                 🤍 Isso me ajudou
               </button>
             )}
-            {meuMatch && meuMatch.ajudou && (
+            {meuMatch && meuMatch.status === "pago" && meuMatch.ajudou && (
               <span className="badge-gratuito">💛 você marcou que ajudou</span>
             )}
           </div>
