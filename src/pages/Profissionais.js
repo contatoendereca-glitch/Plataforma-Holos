@@ -19,7 +19,7 @@ export default function Profissionais() {
   async function carregar() {
     const { data } = await supabase
       .from("perfis")
-      .select("id, nome, pontos_ajudou")
+      .select("id, nome, pontos_ajudou, plano")
       .eq("papel", "Profissional")
       .eq("suspenso", false)
       .order("pontos_ajudou", { ascending: false });
@@ -36,6 +36,9 @@ export default function Profissionais() {
     setConteudosPorProfissional(contagem);
 
     const ordenados = [...(data || [])].sort((a, b) => {
+      const premiumA = a.plano === "Premium" ? 1 : 0;
+      const premiumB = b.plano === "Premium" ? 1 : 0;
+      if (premiumB !== premiumA) return premiumB - premiumA;
       const seloA = calcularSelo(contagem[a.id] || 0, a.pontos_ajudou || 0);
       const seloB = calcularSelo(contagem[b.id] || 0, b.pontos_ajudou || 0);
       const nivelA = seloA?.nivel || 0;
@@ -122,6 +125,7 @@ export default function Profissionais() {
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 500, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
                 {p.nome}
+                {p.plano === "Premium" && <span className="badge-premium" style={{ fontSize: 10 }}>👑 Premium</span>}
                 {selo && <span className="badge-premium" style={{ fontSize: 10 }}>{selo.nome}</span>}
               </p>
               <p className="page-subtitle" style={{ margin: 0, fontSize: 12 }}>

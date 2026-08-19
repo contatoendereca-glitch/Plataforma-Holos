@@ -61,7 +61,7 @@ export default function PainelAdmin() {
     ] = await Promise.all([
       supabase.from("reflexoes_diarias").select("id", { count: "exact", head: true }).eq("ativo", true),
       supabase.from("conteudos").select("id, titulo, formato, plano_minimo, autor_id, criado_em").eq("status", "Pendente").order("criado_em", { ascending: false }),
-      supabase.from("candidaturas_profissional").select("id, area_atuacao, email, whatsapp, tipo_documento, credencial_link, mensagem, criado_em, perfil_id, perfis:perfil_id(nome)").eq("status", "Pendente").order("criado_em", { ascending: true }),
+      supabase.from("candidaturas_profissional").select("id, area_atuacao, email, whatsapp, tipo_documento, credencial_link, link_agenda, mensagem, criado_em, perfil_id, perfis:perfil_id(nome)").eq("status", "Pendente").order("criado_em", { ascending: true }),
       supabase.from("perfis").select("id", { count: "exact", head: true }).gte("criado_em", diasAtras(7)),
       supabase.from("assinaturas").select("id, perfil_id, status, valor_pago, criado_em, perfis:perfil_id(nome)").eq("status", "ativa").order("criado_em", { ascending: false }).limit(5),
       supabase.from("clube_holos").select("id").eq("mes_referencia", primeiroDiaMesISO).maybeSingle(),
@@ -71,7 +71,7 @@ export default function PainelAdmin() {
       supabase.from("loja_holos").select("id, titulo, descricao, categoria, link_afiliado, imagem_url, destaque, criado_em").order("criado_em", { ascending: false }),
       supabase
         .from("matches")
-        .select("id, status, criado_em, usuario:usuario_id(nome, email), profissional:profissional_id(nome)")
+        .select("id, status, criado_em, usuario:usuario_id(nome, email), profissional:profissional_id(nome, whatsapp, link_agenda)")
         .neq("status", "pago")
         .order("criado_em", { ascending: true }),
       supabase.from("assinaturas").select("id, perfil_id, valor_pago, perfis:perfil_id(nome, email)").eq("status", "cancelamento_solicitado"),
@@ -120,7 +120,7 @@ export default function PainelAdmin() {
   }
 
   async function aprovarCandidatura(c) {
-    await supabase.from("perfis").update({ papel: "Profissional" }).eq("id", c.perfil_id);
+    await supabase.from("perfis").update({ papel: "Profissional", whatsapp: c.whatsapp, link_agenda: c.link_agenda }).eq("id", c.perfil_id);
     await supabase.from("candidaturas_profissional").update({ status: "Aprovada" }).eq("id", c.id);
     setMensagemAcao(`${c.perfis?.nome || "Candidato"} agora é Profissional.`);
     carregarTudo();
@@ -390,6 +390,12 @@ export default function PainelAdmin() {
               <p style={{ fontWeight: 500, fontSize: 14 }}>{s.usuario?.nome} → {s.profissional?.nome}</p>
               <p className="page-subtitle" style={{ fontSize: 12 }}>{s.usuario?.email}</p>
               <p className="page-subtitle" style={{ fontSize: 12 }}>status: {s.status} · {new Date(s.criado_em).toLocaleDateString("pt-BR")}</p>
+              {s.status === "aguardando_pagamento" && (
+                <p className="page-subtitle" style={{ fontSize: 12 }}>
+                  📱 {s.profissional?.whatsapp || "sem WhatsApp cadastrado"}
+                  {s.profissional?.link_agenda ? ` · 📅 ${s.profissional.link_agenda}` : ""}
+                </p>
+              )}
               {acao.lembrete && <p style={{ fontSize: 12, marginTop: 4, color: "var(--gold)" }}>{acao.lembrete}</p>}
               {acao.label && (
                 <button className="btn btn-gold btn-sm" style={{ marginTop: 8 }} onClick={() => avancarSolicitacao(s, acao.novo)}>

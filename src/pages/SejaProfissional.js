@@ -10,7 +10,7 @@ export default function SejaProfissional() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState(null);
 
-  const [form, setForm] = useState({ area_atuacao: "", email: perfil?.email || "", whatsapp: "", tipo_documento: "CRP", credencial_link: "", mensagem: "" });
+  const [form, setForm] = useState({ area_atuacao: "", email: perfil?.email || "", whatsapp: "", tipo_documento: "CRP", credencial_link: "", link_agenda: "", mensagem: "" });
 
   useEffect(() => {
     async function carregar() {
@@ -46,6 +46,7 @@ export default function SejaProfissional() {
       whatsapp: form.whatsapp || null,
       tipo_documento: form.tipo_documento,
       credencial_link: form.credencial_link || null,
+      link_agenda: form.link_agenda || null,
       mensagem: form.mensagem || null,
     });
     setEnviando(false);
@@ -155,6 +156,16 @@ export default function SejaProfissional() {
         <p className="page-subtitle" style={{ fontSize: 12, marginTop: -6 }}>
           Depois de enviar, mande uma foto ou PDF do seu {form.tipo_documento === "CRP" ? "CRP" : "certificado"} pro e-mail da Holos pra agilizar a aprovação.
         </p>
+
+        <div className="input-group">
+          <label className="input-label">Link da sua agenda (Cal.com, Google Calendar... opcional)</label>
+          <input
+            className="input"
+            value={form.link_agenda}
+            onChange={(e) => atualizarCampo("link_agenda", e.target.value)}
+            placeholder="https://cal.com/seu-nome"
+          />
+        </div>
 
         <div className="input-group">
           <label className="input-label">Quer contar mais alguma coisa? (opcional)</label>
