@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 const BENEFICIOS = [
-  'Corpo, Mente e Consciência completos, todos os dias',
+  'Corpo, Alma e Espírito completos, todos os dias',
   'Mapa Holos — veja sua evolução nas 3 dimensões',
   'Avaliação Evolutiva Holos após 30 dias de uso',
   'Leitura Holos personalizada semanal',

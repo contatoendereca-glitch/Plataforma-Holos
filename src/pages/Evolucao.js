@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const ITENS = [
   { to: "/calendario", titulo: "Calendário", desc: "veja tudo que você registrou", icone: "📅" },
-  { to: "/mapa", titulo: "Mapa Holos", desc: "seu retrato em Corpo, Mente e Consciência", icone: "🧭" },
+  { to: "/mapa", titulo: "Mapa Holos", desc: "seu retrato em Corpo, Alma e Espírito", icone: "🧭" },
   { to: "/avaliacao", titulo: "Avaliação Evolutiva", desc: "devolutiva da equipe a cada 90 dias", icone: "📜" },
 ];
 

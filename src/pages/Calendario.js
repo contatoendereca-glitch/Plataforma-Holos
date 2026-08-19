@@ -20,7 +20,7 @@ function inicioFimDoMes(data) {
 
 function resumoEntrada(entrada) {
   if (entrada.tipo === "checkin") {
-    return `Corpo ${entrada.nota_corpo} · Mente ${entrada.nota_mente} · Consciência ${entrada.nota_consciencia}`;
+    return `Corpo ${entrada.nota_corpo} · Alma ${entrada.nota_alma} · Espírito ${entrada.nota_espirito}`;
   }
   if (entrada.tipo === "gratidao") {
     return [entrada.campo_1, entrada.campo_2, entrada.campo_3].filter(Boolean).join(" · ");
@@ -44,7 +44,7 @@ export default function Calendario() {
       const isoFim = fim.toISOString();
 
       const [checkins, gratidoes, diario] = await Promise.all([
-        supabase.from("checkins").select("id, nota_corpo, nota_mente, nota_consciencia, criado_em").eq("perfil_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
+        supabase.from("checkins").select("id, nota_corpo, nota_alma, nota_espirito, criado_em").eq("perfil_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
         supabase.from("gratidoes").select("id, campo_1, campo_2, campo_3, criado_em").eq("usuario_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
         supabase.from("diario_holos").select("id, titulo, conteudo, criado_em").eq("usuario_id", perfil.id).gte("criado_em", isoInicio).lte("criado_em", isoFim),
       ]);

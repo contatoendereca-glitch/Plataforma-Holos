@@ -104,7 +104,7 @@ export default function DorDetalhe() {
 
   function BlocoEixo({ nomeEixo, dourado }) {
     const lista = porEixo(nomeEixo);
-    const label = nomeEixo === "Consciencia" ? "Consciência" : nomeEixo;
+    const label = nomeEixo === "Espirito" ? "Espírito" : nomeEixo;
     return (
       <div className={dourado ? "card-gold" : "card"} style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
@@ -128,8 +128,8 @@ export default function DorDetalhe() {
       {erroAjudou && <p className="erro-msg">{erroAjudou}</p>}
 
       <BlocoEixo nomeEixo="Corpo" />
-      <BlocoEixo nomeEixo="Mente" dourado />
-      <BlocoEixo nomeEixo="Consciencia" />
+      <BlocoEixo nomeEixo="Alma" dourado />
+      <BlocoEixo nomeEixo="Espirito" />
     </div>
   );
 }

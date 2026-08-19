@@ -6,8 +6,8 @@ import NavAcoes from "../components/NavAcoes";
 
 const EIXOS = [
   { chave: "nota_corpo", rotulo: "Corpo" },
-  { chave: "nota_mente", rotulo: "Mente" },
-  { chave: "nota_consciencia", rotulo: "Consciência" },
+  { chave: "nota_alma", rotulo: "Alma" },
+  { chave: "nota_espirito", rotulo: "Espírito" },
 ];
 
 function hojeISO() {
@@ -37,7 +37,7 @@ export default function Checkin() {
   const { perfil } = useAuth();
   const navigate = useNavigate();
 
-  const [notas, setNotas] = useState({ nota_corpo: null, nota_mente: null, nota_consciencia: null });
+  const [notas, setNotas] = useState({ nota_corpo: null, nota_alma: null, nota_espirito: null });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState(false);
@@ -47,7 +47,7 @@ export default function Checkin() {
   }
 
   async function salvar() {
-    if (!notas.nota_corpo || !notas.nota_mente || !notas.nota_consciencia) {
+    if (!notas.nota_corpo || !notas.nota_alma || !notas.nota_espirito) {
       setErro("Dê uma nota de 1 a 5 pros 3 eixos antes de registrar.");
       return;
     }
@@ -58,8 +58,8 @@ export default function Checkin() {
         perfil_id: perfil.id,
         data: hojeISO(),
         nota_corpo: notas.nota_corpo,
-        nota_mente: notas.nota_mente,
-        nota_consciencia: notas.nota_consciencia,
+        nota_alma: notas.nota_alma,
+        nota_espirito: notas.nota_espirito,
       },
       { onConflict: "perfil_id,data" }
     );

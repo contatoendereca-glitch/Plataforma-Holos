@@ -43,7 +43,7 @@ export default function Perfil() {
   }
 
   function compartilharApp() {
-    const mensagem = `Tô usando a Plataforma Holos pra cuidar de mim em Corpo, Mente e Consciência. Bora comigo?\n\n📲 https://plataforma-holos.vercel.app`;
+    const mensagem = `Tô usando a Plataforma Holos pra cuidar de mim em Corpo, Alma e Espírito. Bora comigo?\n\n📲 https://plataforma-holos.vercel.app`;
     window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`, "_blank");
   }
 
