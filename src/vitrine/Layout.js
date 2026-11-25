@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { ReactComponent as HolosLogo } from '../assets/holos-logo.svg'
+import Almiah from './Almiah'
 
 const MENU = [
   { to: '/', rotulo: 'Início', fim: true },
@@ -32,11 +33,12 @@ export default function Layout() {
 
   return (
     <div className="v-site">
-      <header className="v-topo">
+      <header className={`v-topo ${pathname === '/' ? 'v-topo-escuro' : ''}`}>
         <div className="v-container v-topo-linha">
           <Link to="/" className="v-topo-marca" aria-label="Plataforma Holos, página inicial">
-            <Marca />
+            Plataforma Holos
           </Link>
+          <span className="v-topo-divisor" aria-hidden="true" />
           <button
             className="v-menu-botao"
             aria-expanded={menuAberto}
@@ -45,7 +47,7 @@ export default function Layout() {
           >
             {menuAberto ? 'Fechar' : 'Menu'}
           </button>
-          <nav id="menu-principal" className={`v-menu ${menuAberto ? 'aberto' : ''}`}>
+          <nav id="menu-principal" aria-label="Principal" className={`v-menu ${menuAberto ? 'aberto' : ''}`}>
             {MENU.map((m) => (
               <NavLink key={m.to} to={m.to} end={m.fim}>
                 {m.rotulo}
@@ -83,6 +85,7 @@ export default function Layout() {
           <p className="v-rodape-copy">© {new Date().getFullYear()} Plataforma Holos</p>
         </div>
       </footer>
+      <Almiah />
     </div>
   )
 }

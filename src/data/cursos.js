@@ -29,6 +29,7 @@ export const CAMINHOS = [
 ]
 
 export const INTEGRACAO = {
+  id: 'integracao',
   nome: 'Integração',
   lema: 'Reconhecer-se por inteiro.',
 }
@@ -176,17 +177,17 @@ const FRENTE_DA_LETRA = { C: ['corpo'], A: ['alma'], E: ['espirito'] }
 // Cursos de Integração (I): em quais abas aparecem, conforme o conteúdo de cada um.
 // Um mesmo curso pode aparecer em mais de uma aba, sempre com a mesma página.
 const FRENTES_INTEGRACAO = {
-  I01: ['corpo', 'alma'], // REVISAR
+  I01: ['corpo', 'alma'],
   I02: ['corpo', 'alma'],
   I03: ['corpo'],
   I04: ['alma'],
   I05: ['alma', 'espirito'],
   I06: ['alma'],
-  I07: ['alma'], // REVISAR
+  I07: ['alma'],
   I08: ['alma'],
-  I09: ['alma'], // REVISAR
+  I09: ['alma'],
   I10: ['corpo', 'alma', 'espirito'],
-  I11: ['alma'], // REVISAR
+  I11: ['corpo', 'alma', 'espirito'],
   I12: ['alma', 'espirito'],
   I13: ['corpo', 'alma', 'espirito'],
   I14: ['alma'],
@@ -200,8 +201,11 @@ const FRENTES_INTEGRACAO = {
   I22: ['corpo', 'alma', 'espirito'],
 }
 
-// Classificação provisória, aguardando confirmação da Fernanda.
-export const PARA_REVISAR = ['I01', 'I07', 'I09', 'I11']
+// Capas dos cursos (imagens em public/img). Cursos sem capa usam a capa padrão Holos.
+const CAPAS = {
+  A01: '/img/capa-a01.webp',
+  A02: '/img/capa-a02.webp',
+}
 
 export const STATUS_PADRAO = 'Em breve'
 
@@ -211,6 +215,7 @@ export const CURSOS = LISTA.map(([codigo, titulo, resumo]) => ({
   resumo,
   frentes: FRENTE_DA_LETRA[codigo[0]] || FRENTES_INTEGRACAO[codigo],
   integracao: codigo[0] === 'I',
+  capa: CAPAS[codigo] || null,
   primeiro: PRIMEIROS.includes(codigo),
   introducaoTeorica: INTRODUCAO_TEORICA.includes(codigo),
   kiwify: LINKS_KIWIFY[codigo] || null,
@@ -223,12 +228,13 @@ export function buscarCurso(codigo) {
 }
 
 export function buscarCaminho(id) {
-  return CAMINHOS.find((c) => c.id === id)
+  return id === INTEGRACAO.id ? INTEGRACAO : CAMINHOS.find((c) => c.id === id)
 }
 
 // Cursos de uma frente: primeiros lançamentos antes, depois pela ordem do catálogo.
 export function cursosDaFrente(id) {
-  return CURSOS.filter((c) => c.frentes.includes(id)).sort(
+  const daFrente = id === INTEGRACAO.id ? (c) => c.integracao : (c) => c.frentes.includes(id)
+  return CURSOS.filter(daFrente).sort(
     (a, b) => Number(b.primeiro) - Number(a.primeiro) || PRIMEIROS.indexOf(a.codigo) - PRIMEIROS.indexOf(b.codigo)
   )
 }
