@@ -1,38 +1,25 @@
-# Plataforma Holos — v2 (Fase 2: MVP assinatura)
+# Plataforma Holos — Direção para dentro
 
-App React conectado ao Supabase (projeto `holos-v2`).
+Site em React, publicado na Vercel (plataforma-holos.vercel.app), com banco no Supabase (`holos-v2`).
 
-## O que já funciona
-- Login / Criar conta (Supabase Auth)
-- Reflexão Diária (sorteia uma frase da tabela `reflexoes_diarias`)
-- Check-in Diário (Corpo, Alma, Espírito — 1 por dia)
-- Home por dor, com Alma sempre liberada e Corpo/Espírito bloqueados para quem não é Premium
-- Tela Premium (upsell — checkout de pagamento entra na Fase 3)
-- Perfil (dados básicos + sair)
+## Etapa 1 — Vitrine (atual)
+Site aberto, sem login:
+- `/` Início · `/cursos` Catálogo (filtro por caminho) · `/cursos/i10` Página de cada curso
+- `/parceiros` Profissionais Parceiros Holos (formulário salva na tabela `parceiros_interesse`)
+- `/sobre` · `/privacidade`
+
+Onde mexer:
+- **Cursos:** `src/data/cursos.js`. Para abrir a compra de um curso, coloque o link da Kiwify em `LINKS_KIWIFY`.
+- **Cores e visual:** `src/styles/vitrine.css`.
+- **Tabela do formulário:** `supabase/parceiros_interesse.sql` (rodar uma vez no SQL Editor do Supabase).
+
+Preços e cargas horárias do catálogo ainda são propostas e não aparecem no site.
+
+## Guardado para as próximas etapas
+As telas antigas (check-in, diário, mapa, calendário, marketplace, loja, premium, admin) continuam em `src/pages`, sem aparecer no site, para a Etapa 2 (área da aluna). As funções de pagamento em `api/` continuam no servidor.
 
 ## Rodar localmente
 ```bash
 npm install
 npm start
 ```
-Abre em http://localhost:3000
-
-## Antes de testar, popular dados de teste
-Rode o arquivo `seed_teste.sql` no SQL Editor do Supabase — ele adiciona:
-- 15 Reflexões Diárias de teste
-- Alguns conteúdos de exemplo (Corpo/Alma/Espírito) para a dor "Ansiedade"
-
-Sem isso, as telas vão aparecer vazias (não é bug — é falta de dado).
-
-## Deploy (Vercel)
-1. Suba esse projeto pra um repositório novo no GitHub (ex: `holos-v2`).
-2. Em vercel.com, "Add New Project" → importe o repositório.
-3. Framework preset: Create React App (detecta sozinho).
-4. Deploy.
-
-Não precisa configurar variáveis de ambiente — as chaves do Supabase (URL + anon key) já estão em `src/lib/supabase.js`. Isso é seguro: a anon key é pública por natureza (é como o Supabase foi projetado pra funcionar em apps client-side).
-
-## Próximos passos (Fase 3)
-- Checkout de pagamento (Stripe ou Mercado Pago) ligado a `assinaturas`
-- Motor de Leitura Holos (regras + templates) na tela Meu Caminho
-- Biblioteca e Vitrine de Profissionais
