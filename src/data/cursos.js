@@ -178,7 +178,9 @@ const LINKS_KIWIFY = {}
 const FRENTE_DA_LETRA = { C: ['corpo'], A: ['alma'], E: ['espirito'], I: ['integracao'] }
 
 // Cursos de Integração (I) aparecem somente na frente Integração.
-// Capas dos cursos (imagens em public/img). Cursos sem capa usam a capa padrão Holos.
+// Capas dos cursos (imagens em public/img). Enquanto um curso não tem foto própria,
+// o card mostra o ícone da frente. Quando a foto chegar, basta incluí-la aqui
+// (como em A01 e A02) e o ícone é substituído automaticamente.
 const CAPAS = {
   A01: '/img/capa-a01.webp',
   A02: '/img/capa-a02.webp',

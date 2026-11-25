@@ -20,20 +20,16 @@ function Lotus(props) {
   )
 }
 
-// Miniatura circular do retrato da Almiah (public/img/almiah.webp).
-// Enquanto o retrato não estiver no site, mostra o ícone de lótus.
+// Miniatura circular do retrato da Almiah.
+// A imagem é o retrato inteiro (Almiah_original.png, em versão leve com o mesmo
+// enquadramento); o recorte do rosto, dos óculos e do cabelo é feito só pelo CSS.
 function Retrato({ tamanho }) {
   const [falhou, setFalhou] = useState(false)
   if (falhou) return <Lotus />
   return (
-    <img
-      className="almiah-retrato"
-      src="/img/almiah.webp"
-      alt=""
-      width={tamanho}
-      height={tamanho}
-      onError={() => setFalhou(true)}
-    />
+    <span className="almiah-retrato" style={{ width: tamanho, height: tamanho }}>
+      <img src="/img/almiah-botao.webp" alt="" onError={() => setFalhou(true)} />
+    </span>
   )
 }
 

@@ -131,7 +131,7 @@ export default function CirculosHolos() {
           </text>
           <text className="anel-frase so-largo" x={a.lx} y={a.ly + 30} textAnchor="middle" aria-hidden="true">
             {a.frase.map((linha, i) => (
-              <tspan key={i} x={a.lx} dy={i === 0 ? 0 : '1.3em'}>{linha}</tspan>
+              <tspan key={i} x={a.lx} dy={i === 0 ? 0 : '1.35em'}>{linha}</tspan>
             ))}
           </text>
           <text className="anel-frase so-estreito" x={a.mx} y={a.ly + 30} textAnchor="middle" aria-hidden="true">
