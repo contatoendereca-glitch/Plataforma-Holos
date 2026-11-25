@@ -12,18 +12,21 @@ export const CAMINHOS = [
     id: 'corpo',
     nome: 'Corpo',
     lema: 'O cuidado e a expressão da identidade.',
+    frase: 'Cuidado, expressão e identidade',
     texto: 'Imagem, autocuidado, sono, respiração e a escuta dos sinais do corpo.',
   },
   {
     id: 'alma',
     nome: 'Alma',
     lema: 'Compreender para transformar.',
+    frase: 'Compreender para transformar',
     texto: 'Psicanálise, psicologia e neurociência para compreender emoções e padrões.',
   },
   {
     id: 'espirito',
     nome: 'Espírito',
     lema: 'Sentido, consciência e propósito.',
+    frase: 'Sentido, consciência e propósito',
     texto: 'Sabedoria bíblica, discernimento e propósito, numa fé cristã ampla.',
   },
 ]
@@ -172,35 +175,9 @@ const INTRODUCAO_TEORICA = ['A01', 'A02']
 // Links de compra da Kiwify. Ex.: I10: 'https://pay.kiwify.com.br/xxxx'
 const LINKS_KIWIFY = {}
 
-const FRENTE_DA_LETRA = { C: ['corpo'], A: ['alma'], E: ['espirito'] }
+const FRENTE_DA_LETRA = { C: ['corpo'], A: ['alma'], E: ['espirito'], I: ['integracao'] }
 
-// Cursos de Integração (I): em quais abas aparecem, conforme o conteúdo de cada um.
-// Um mesmo curso pode aparecer em mais de uma aba, sempre com a mesma página.
-const FRENTES_INTEGRACAO = {
-  I01: ['corpo', 'alma'],
-  I02: ['corpo', 'alma'],
-  I03: ['corpo'],
-  I04: ['alma'],
-  I05: ['alma', 'espirito'],
-  I06: ['alma'],
-  I07: ['alma'],
-  I08: ['alma'],
-  I09: ['alma'],
-  I10: ['corpo', 'alma', 'espirito'],
-  I11: ['corpo', 'alma', 'espirito'],
-  I12: ['alma', 'espirito'],
-  I13: ['corpo', 'alma', 'espirito'],
-  I14: ['alma'],
-  I15: ['corpo', 'alma', 'espirito'],
-  I16: ['alma'],
-  I17: ['alma', 'espirito'],
-  I18: ['alma'],
-  I19: ['alma'],
-  I20: ['alma', 'espirito'],
-  I21: ['alma'],
-  I22: ['corpo', 'alma', 'espirito'],
-}
-
+// Cursos de Integração (I) aparecem somente na frente Integração.
 // Capas dos cursos (imagens em public/img). Cursos sem capa usam a capa padrão Holos.
 const CAPAS = {
   A01: '/img/capa-a01.webp',
@@ -213,7 +190,7 @@ export const CURSOS = LISTA.map(([codigo, titulo, resumo]) => ({
   codigo,
   titulo,
   resumo,
-  frentes: FRENTE_DA_LETRA[codigo[0]] || FRENTES_INTEGRACAO[codigo],
+  frentes: FRENTE_DA_LETRA[codigo[0]],
   integracao: codigo[0] === 'I',
   capa: CAPAS[codigo] || null,
   primeiro: PRIMEIROS.includes(codigo),
@@ -233,8 +210,7 @@ export function buscarCaminho(id) {
 
 // Cursos de uma frente: primeiros lançamentos antes, depois pela ordem do catálogo.
 export function cursosDaFrente(id) {
-  const daFrente = id === INTEGRACAO.id ? (c) => c.integracao : (c) => c.frentes.includes(id)
-  return CURSOS.filter(daFrente).sort(
+  return CURSOS.filter((c) => c.frentes.includes(id)).sort(
     (a, b) => Number(b.primeiro) - Number(a.primeiro) || PRIMEIROS.indexOf(a.codigo) - PRIMEIROS.indexOf(b.codigo)
   )
 }

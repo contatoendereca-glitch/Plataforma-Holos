@@ -36,6 +36,7 @@ export default function Layout() {
       <header className={`v-topo ${pathname === '/' ? 'v-topo-escuro' : ''}`}>
         <div className="v-container v-topo-linha">
           <Link to="/" className="v-topo-marca" aria-label="Plataforma Holos, página inicial">
+            <img src="/img/arvore-marca.webp" alt="" width="34" height="34" className="v-topo-arvore" />
             Plataforma Holos
           </Link>
           <span className="v-topo-divisor" aria-hidden="true" />

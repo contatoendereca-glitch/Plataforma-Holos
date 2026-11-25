@@ -44,8 +44,8 @@ export default function Sobre() {
           A integração é o passo em que as três frentes se encontram. Ela acontece em todos os cursos, na Mini-Lente
           ao fim de cada módulo e no módulo-assinatura Lente Holos, e ganha cursos próprios, como{' '}
           <Link to="/cursos/i10">Holos Identidade: Quem Sou Eu?</Link> e{' '}
-          <Link to="/cursos/i22">Introdução à Metodologia Holos</Link>. Por isso, alguns cursos aparecem em mais de
-          uma frente no catálogo.
+          <Link to="/cursos/i22">Introdução à Metodologia Holos</Link>, reunidos no catálogo em{' '}
+          <Link to="/cursos?frente=integracao">Cursos de Integração</Link>.
         </p>
 
         <div className="v-diario">

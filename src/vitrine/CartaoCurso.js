@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import { buscarCaminho } from '../data/cursos'
+import IconeFrente from './IconeFrente'
 
 export default function CartaoCurso({ curso }) {
-  const frente = curso.integracao ? buscarCaminho('integracao') : buscarCaminho(curso.frentes[0])
+  const frente = buscarCaminho(curso.frentes[0])
   return (
     <Link to={`/cursos/${curso.codigo.toLowerCase()}`} className="v-cartao-curso">
       <div className={`v-capa ${curso.capa ? '' : 'v-capa-padrao'}`}>
@@ -10,7 +11,7 @@ export default function CartaoCurso({ curso }) {
           <img src={curso.capa} alt="" loading="lazy" width="390" height="172" />
         ) : (
           <>
-            <img src="/img/medalhao-arvore.webp" alt="" loading="lazy" className="v-capa-arvore" />
+            <IconeFrente frente={frente.id} tamanho={30} />
             <span className="v-capa-frente">{frente.nome}</span>
           </>
         )}

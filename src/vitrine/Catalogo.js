@@ -46,7 +46,6 @@ export default function Catalogo() {
               className={`c-integracao ${ehIntegracao ? 'ativa' : ''}`}
               aria-current={ehIntegracao ? 'page' : undefined}
             >
-              <img src="/img/medalhao-arvore.webp" alt="" width="22" height="22" />
               Integração
             </Link>
           </nav>
@@ -90,7 +89,7 @@ export default function Catalogo() {
           <p className="v-pequeno c-nota">
             {ehIntegracao
               ? 'Os cursos de Integração reúnem corpo, alma e espírito numa mesma jornada. '
-              : 'Alguns cursos unem mais de uma frente e aparecem em mais de uma aba. '}
+              : 'Os cursos que reúnem as três frentes ficam em Integração. '}
             Saiba mais em <Link to="/sobre#lente-holos">Sobre a Lente Holos</Link>.
           </p>
         </div>

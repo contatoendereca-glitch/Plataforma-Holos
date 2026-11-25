@@ -305,11 +305,11 @@ a.v-selo-linha:hover { background: var(--creme); }
 /* Argolas */
 .circulos { display: block; width: 100%; height: auto; overflow: visible; }
 .anel-area { fill: transparent; pointer-events: all; }
-.anel-base { fill: none; stroke: url(#ouro-anel); stroke-width: 2.6; pointer-events: none; transition: stroke-width .25s, filter .25s; }
+.anel-base { fill: none; stroke: url(#ouro-anel); stroke-width: 4.6; pointer-events: none; transition: stroke-width .25s, filter .25s; }
 .anel-foco, .medalhao-foco { fill: none; stroke: #FFF3D6; stroke-width: 2; stroke-dasharray: 5 6; opacity: 0; pointer-events: none; }
-.anel-nome { font-family: var(--titulo); font-size: 44px; font-weight: 500; fill: #F6E9D2; pointer-events: none; transition: fill .25s; }
+.anel-nome { font-family: var(--titulo); font-size: 42px; font-weight: 500; fill: #F6E9D2; pointer-events: none; transition: fill .25s; }
 .anel-link { cursor: pointer; outline: none; }
-.anel-link:hover .anel-base, .anel-link:focus-visible .anel-base, .anel-link.tocado .anel-base { stroke-width: 3.6; filter: url(#brilho); }
+.anel-link:hover .anel-base, .anel-link:focus-visible .anel-base, .anel-link.tocado .anel-base { stroke-width: 5.6; filter: url(#brilho); }
 .anel-link:hover .anel-nome, .anel-link:focus-visible .anel-nome, .anel-link.tocado .anel-nome { fill: #FFE6B0; }
 .anel-link.tocado .anel-area { fill: rgba(233, 201, 138, .08); }
 .anel-link:focus-visible .anel-foco, .medalhao-link:focus-visible .medalhao-foco { opacity: 1; }
@@ -339,11 +339,10 @@ a.v-selo-linha:hover { background: var(--creme); }
 .v-capa img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
 .v-cartao-curso:hover .v-capa img { transform: scale(1.03); }
 .v-capa-padrao {
-  display: flex; align-items: center; justify-content: center; gap: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 11px;
   background: radial-gradient(ellipse at 30% 20%, rgba(255, 245, 220, .9), rgba(255, 245, 220, 0) 60%), linear-gradient(135deg, #EEDDBF 0%, #D9B98A 100%);
 }
-.v-capa-padrao .v-capa-arvore { width: 74px; height: 74px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(90, 55, 20, .3)); }
-.v-cartao-curso:hover .v-capa-padrao .v-capa-arvore { transform: none; }
+.v-capa-padrao .icone-frente { color: #6B4522; flex-shrink: 0; }
 .v-capa-frente { font-family: var(--titulo); font-size: 24px; font-weight: 600; color: #5A3B1E; }
 .v-cartao-corpo { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 16px 20px 20px; flex: 1; }
 .v-cartao-titulo { font-size: 23px; }
@@ -367,7 +366,7 @@ a.v-selo-linha:hover { background: var(--creme); }
 .c-abas a { display: block; padding: 9px 30px; border-radius: 999px; font-size: 16px; font-weight: 500; color: var(--cafe); text-decoration: none; transition: background .2s, color .2s; }
 .c-abas a:hover { background: #F0E3CC; }
 .c-abas a.ativa { background: linear-gradient(180deg, #A9733D 0%, #7E4F24 100%); color: #FFF6E6; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 2px 6px rgba(90, 55, 20, .25); }
-.c-integracao { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px 8px 10px; border: 1px solid #C9A66B; border-radius: 999px; font-size: 15px; font-weight: 600; color: var(--bronze); text-decoration: none; background: rgba(255, 253, 248, .6); }
+.c-integracao { display: inline-flex; align-items: center; gap: 8px; padding: 9px 22px; border: 1px solid #C9A66B; border-radius: 999px; font-size: 15px; font-weight: 600; color: var(--bronze); text-decoration: none; background: rgba(255, 253, 248, .6); }
 .c-integracao:hover { background: #F6EBD6; }
 .c-integracao.ativa { background: linear-gradient(180deg, #A9733D 0%, #7E4F24 100%); color: #FFF6E6; border-color: #7E4F24; }
 .c-integracao img { border-radius: 50%; }
@@ -432,3 +431,24 @@ a.v-selo-linha:hover { background: var(--creme); }
   .almiah-painel { position: fixed; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62vh; }
   .v-site main { padding-bottom: 56px; }
 }
+
+/* Ajustes finais */
+.v-topo-marca { display: inline-flex; align-items: center; gap: 10px; }
+.v-topo-arvore { width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 1px 4px rgba(40, 22, 8, .25); flex-shrink: 0; }
+.anel-frase { font-family: var(--interface); font-size: 17px; font-weight: 500; fill: #EBDDC5; pointer-events: none; transition: fill .25s; }
+.anel-link:hover .anel-frase, .anel-link:focus-visible .anel-frase, .anel-link.tocado .anel-frase { fill: #FFF1D6; }
+.almiah-retrato { display: block; border-radius: 50%; object-fit: cover; border: 1.5px solid #C9A05C; background: #F7EEDC; flex-shrink: 0; }
+.almiah-botao { padding-left: 6px; }
+@media (max-width: 900px) {
+  .h-circulos { max-width: 480px; margin: 0 -8px; width: calc(100% + 16px); }
+  .anel-frase { font-size: 20px; }
+  .so-largo { display: none; }
+  .anel-nome { font-size: 44px; }
+}
+@media (max-width: 640px) {
+  .v-topo-marca { font-size: 23px; }
+  .v-topo-arvore { width: 30px; height: 30px; }
+}
+
+.so-estreito { display: none; }
+@media (max-width: 900px) { .so-estreito { display: inline; } }

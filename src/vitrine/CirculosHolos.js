@@ -5,23 +5,25 @@ import { useNavigate } from 'react-router-dom'
 // Cada argola inteira é um link; o medalhão tem prioridade na sobreposição.
 // A camada de reflexo ignora o ponteiro, para não roubar cliques.
 
-const R = 128
+const R = 140
 const VOLTA_MS = 1400
 const INTERVALO_MS = 250
 
+// Cada argola tem uma zona de texto (nome + frase em até duas linhas),
+// afastada das interseções e do medalhão.
 const ANEIS = [
-  { id: 'corpo', nome: 'Corpo', cx: 160, cy: 160, lx: 118, ly: 120 },
-  { id: 'alma', nome: 'Alma', cx: 320, cy: 160, lx: 362, ly: 120 },
-  { id: 'espirito', nome: 'Espírito', cx: 240, cy: 298, lx: 240, ly: 384 },
+  { id: 'corpo', nome: 'Corpo', cx: 170, cy: 170, lx: 122, mx: 118, ly: 124, frase: ['Cuidado, expressão', 'e identidade'], curta: ['Cuidado,', 'expressão e', 'identidade'] },
+  { id: 'alma', nome: 'Alma', cx: 350, cy: 170, lx: 400, mx: 406, ly: 124, frase: ['Compreender', 'para transformar'], curta: ['Compreender', 'para', 'transformar'] },
+  { id: 'espirito', nome: 'Espírito', cx: 260, cy: 320, lx: 260, mx: 260, ly: 362, frase: ['Sentido, consciência', 'e propósito'], curta: ['Sentido,', 'consciência e', 'propósito'] },
 ]
-const MED = { cx: 240, cy: 206, r: 76 }
+const MED = { cx: 260, cy: 220, r: 76 }
 
 // Reflexo: arco curto com cauda (três traços sobrepostos, com as pontas alinhadas).
 const C = 2 * Math.PI * R
 const CAMADAS = [
-  { len: 120, w: 5, op: 0.16 },
-  { len: 54, w: 4.5, op: 0.5 },
-  { len: 18, w: 4.2, op: 1 },
+  { len: 130, w: 6, op: 0.16 },
+  { len: 58, w: 5.6, op: 0.5 },
+  { len: 20, w: 5.4, op: 1 },
 ]
 
 function Reflexo({ anel, atraso }) {
@@ -73,7 +75,7 @@ export default function CirculosHolos() {
   return (
     <svg
       className="circulos"
-      viewBox="0 0 480 460"
+      viewBox="0 0 520 490"
       role="group"
       aria-label="Frentes da Plataforma Holos"
     >
@@ -113,7 +115,7 @@ export default function CirculosHolos() {
           key={a.id}
           href={`/cursos?frente=${a.id}`}
           className={`anel-link ${tocado === a.id ? 'tocado' : ''}`}
-          aria-label={`Ver cursos de ${a.nome}`}
+          aria-label={`Ver cursos de ${a.nome}: ${a.frase.join(' ')}`}
           onClick={(e) => ir(e, `/cursos?frente=${a.id}`)}
           onMouseEnter={() => girar(a.id)}
           onFocus={() => girar(a.id)}
@@ -126,6 +128,16 @@ export default function CirculosHolos() {
           <circle className="anel-base" cx={a.cx} cy={a.cy} r={R} />
           <text className="anel-nome" x={a.lx} y={a.ly} textAnchor="middle" aria-hidden="true">
             {a.nome}
+          </text>
+          <text className="anel-frase so-largo" x={a.lx} y={a.ly + 30} textAnchor="middle" aria-hidden="true">
+            {a.frase.map((linha, i) => (
+              <tspan key={i} x={a.lx} dy={i === 0 ? 0 : '1.3em'}>{linha}</tspan>
+            ))}
+          </text>
+          <text className="anel-frase so-estreito" x={a.mx} y={a.ly + 30} textAnchor="middle" aria-hidden="true">
+            {a.curta.map((linha, i) => (
+              <tspan key={i} x={a.mx} dy={i === 0 ? 0 : '1.1em'}>{linha}</tspan>
+            ))}
           </text>
         </a>
       ))}

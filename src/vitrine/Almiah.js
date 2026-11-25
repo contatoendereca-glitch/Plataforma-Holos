@@ -20,6 +20,23 @@ function Lotus(props) {
   )
 }
 
+// Miniatura circular do retrato da Almiah (public/img/almiah.webp).
+// Enquanto o retrato não estiver no site, mostra o ícone de lótus.
+function Retrato({ tamanho }) {
+  const [falhou, setFalhou] = useState(false)
+  if (falhou) return <Lotus />
+  return (
+    <img
+      className="almiah-retrato"
+      src="/img/almiah.webp"
+      alt=""
+      width={tamanho}
+      height={tamanho}
+      onError={() => setFalhou(true)}
+    />
+  )
+}
+
 const ATALHOS = [
   { id: 'quem', rotulo: 'Quem é Almiah?' },
   { id: 'frentes', rotulo: 'Conhecer as frentes' },
@@ -110,7 +127,7 @@ export default function Almiah() {
       {aberta && (
         <section ref={painelRef} className="almiah-painel" role="dialog" aria-modal="false" aria-labelledby="almiah-titulo">
           <header className="almiah-topo">
-            <Lotus />
+            <Retrato tamanho={36} />
             <h2 id="almiah-titulo" tabIndex={-1}>Almiah</h2>
             <button className="almiah-fechar" onClick={() => fechar(true)} aria-label="Fechar Almiah">×</button>
           </header>
@@ -144,7 +161,7 @@ export default function Almiah() {
           aria-expanded="false"
           aria-label="Abrir Almiah, guia da Plataforma Holos"
         >
-          <Lotus />
+          <Retrato tamanho={38} />
           <span>Almiah</span>
         </button>
       )}
