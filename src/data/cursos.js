@@ -5,36 +5,33 @@
 // Para ativar a compra de um curso, preencha `kiwify` com o link da Kiwify
 // em LINKS_KIWIFY (no fim deste arquivo). Sem link, o curso aparece como "Em breve".
 
+// As três frentes do catálogo (abas). Integração é apresentada na página Sobre,
+// como parte da metodologia Lente Holos.
 export const CAMINHOS = [
   {
     id: 'corpo',
-    letra: 'C',
     nome: 'Corpo',
     lema: 'O cuidado e a expressão da identidade.',
     texto: 'Imagem, autocuidado, sono, respiração e a escuta dos sinais do corpo.',
   },
   {
     id: 'alma',
-    letra: 'A',
     nome: 'Alma',
     lema: 'Compreender para transformar.',
-    texto: 'Psicanálise, psicologia e neurociência para compreender emoções, padrões e vínculos.',
+    texto: 'Psicanálise, psicologia e neurociência para compreender emoções e padrões.',
   },
   {
     id: 'espirito',
-    letra: 'E',
     nome: 'Espírito',
     lema: 'Sentido, consciência e propósito.',
     texto: 'Sabedoria bíblica, discernimento e propósito, numa fé cristã ampla.',
   },
-  {
-    id: 'integracao',
-    letra: 'I',
-    nome: 'Integração',
-    lema: 'Reconhecer-se por inteiro.',
-    texto: 'Jornadas que reúnem corpo, alma e espírito numa mesma direção.',
-  },
 ]
+
+export const INTEGRACAO = {
+  nome: 'Integração',
+  lema: 'Reconhecer-se por inteiro.',
+}
 
 // Primeiros lançamentos, na ordem de prioridade.
 export const PRIMEIROS = ['I10', 'E01', 'I13', 'C01', 'I06']
@@ -174,18 +171,50 @@ const INTRODUCAO_TEORICA = ['A01', 'A02']
 // Links de compra da Kiwify. Ex.: I10: 'https://pay.kiwify.com.br/xxxx'
 const LINKS_KIWIFY = {}
 
-function caminhoDaLetra(letra) {
-  return CAMINHOS.find((c) => c.letra === letra).id
+const FRENTE_DA_LETRA = { C: ['corpo'], A: ['alma'], E: ['espirito'] }
+
+// Cursos de Integração (I): em quais abas aparecem, conforme o conteúdo de cada um.
+// Um mesmo curso pode aparecer em mais de uma aba, sempre com a mesma página.
+const FRENTES_INTEGRACAO = {
+  I01: ['corpo', 'alma'], // REVISAR
+  I02: ['corpo', 'alma'],
+  I03: ['corpo'],
+  I04: ['alma'],
+  I05: ['alma', 'espirito'],
+  I06: ['alma'],
+  I07: ['alma'], // REVISAR
+  I08: ['alma'],
+  I09: ['alma'], // REVISAR
+  I10: ['corpo', 'alma', 'espirito'],
+  I11: ['alma'], // REVISAR
+  I12: ['alma', 'espirito'],
+  I13: ['corpo', 'alma', 'espirito'],
+  I14: ['alma'],
+  I15: ['corpo', 'alma', 'espirito'],
+  I16: ['alma'],
+  I17: ['alma', 'espirito'],
+  I18: ['alma'],
+  I19: ['alma'],
+  I20: ['alma', 'espirito'],
+  I21: ['alma'],
+  I22: ['corpo', 'alma', 'espirito'],
 }
+
+// Classificação provisória, aguardando confirmação da Fernanda.
+export const PARA_REVISAR = ['I01', 'I07', 'I09', 'I11']
+
+export const STATUS_PADRAO = 'Em breve'
 
 export const CURSOS = LISTA.map(([codigo, titulo, resumo]) => ({
   codigo,
   titulo,
   resumo,
-  caminho: caminhoDaLetra(codigo[0]),
+  frentes: FRENTE_DA_LETRA[codigo[0]] || FRENTES_INTEGRACAO[codigo],
+  integracao: codigo[0] === 'I',
   primeiro: PRIMEIROS.includes(codigo),
   introducaoTeorica: INTRODUCAO_TEORICA.includes(codigo),
   kiwify: LINKS_KIWIFY[codigo] || null,
+  status: LINKS_KIWIFY[codigo] ? 'Inscrições abertas' : STATUS_PADRAO,
   ...(DETALHES[codigo] || {}),
 }))
 
@@ -195,6 +224,13 @@ export function buscarCurso(codigo) {
 
 export function buscarCaminho(id) {
   return CAMINHOS.find((c) => c.id === id)
+}
+
+// Cursos de uma frente: primeiros lançamentos antes, depois pela ordem do catálogo.
+export function cursosDaFrente(id) {
+  return CURSOS.filter((c) => c.frentes.includes(id)).sort(
+    (a, b) => Number(b.primeiro) - Number(a.primeiro) || PRIMEIROS.indexOf(a.codigo) - PRIMEIROS.indexOf(b.codigo)
+  )
 }
 
 export const METODOLOGIA = [

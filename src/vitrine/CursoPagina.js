@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
-import { buscarCurso, buscarCaminho, CURSOS, METODOLOGIA } from '../data/cursos'
+import { buscarCurso, buscarCaminho, cursosDaFrente, METODOLOGIA } from '../data/cursos'
 import CartaoCurso from './CartaoCurso'
 import NaoEncontrada from './NaoEncontrada'
 
@@ -8,19 +8,21 @@ export default function CursoPagina() {
   const curso = buscarCurso(codigo)
   if (!curso) return <NaoEncontrada />
 
-  const caminho = buscarCaminho(curso.caminho)
-  const relacionados = CURSOS.filter((c) => c.caminho === curso.caminho && c.codigo !== curso.codigo)
-    .sort((a, b) => b.primeiro - a.primeiro)
-    .slice(0, 3)
+  const caminho = buscarCaminho(curso.frentes[0])
+  const frentes = curso.frentes.map(buscarCaminho)
+  const relacionados = cursosDaFrente(caminho.id).filter((c) => c.codigo !== curso.codigo).slice(0, 3)
 
   return (
     <>
-      <section className={`v-curso-topo caminho-${curso.caminho}`}>
+      <section className="v-curso-topo">
         <div className="v-container">
-          <Link to={`/cursos?caminho=${caminho.id}`} className="v-voltar">← Holos {caminho.nome}</Link>
+          <Link to={`/cursos?frente=${caminho.id}`} className="v-voltar">← Cursos de {caminho.nome}</Link>
           <div className="v-curso-selos">
-            <span className="v-selo">{curso.kiwify ? 'Inscrições abertas' : 'Em breve'}</span>
-            {curso.primeiro && <span className="v-selo v-selo-linha">Primeiros lançamentos</span>}
+            <span className={`v-selo ${curso.kiwify ? 'v-selo-aberto' : ''}`}>{curso.status}</span>
+            {frentes.map((f) => (
+              <Link key={f.id} to={`/cursos?frente=${f.id}`} className="v-selo v-selo-linha">{f.nome}</Link>
+            ))}
+            {curso.primeiro && <span className="v-selo v-selo-linha">Primeiro lançamento</span>}
           </div>
           <h1 className="v-titulo-pagina">{curso.titulo}</h1>
           {curso.subtitulo && <p className="v-curso-subtitulo">{curso.subtitulo}</p>}
@@ -133,7 +135,7 @@ export default function CursoPagina() {
       {relacionados.length > 0 && (
         <section className="v-secao v-secao-bege">
           <div className="v-container">
-            <h2 className="v-titulo-secao">Outros cursos de Holos {caminho.nome}</h2>
+            <h2 className="v-titulo-secao">Outros cursos de {caminho.nome}</h2>
             <div className="v-grade-cursos">
               {relacionados.map((c) => <CartaoCurso key={c.codigo} curso={c} />)}
             </div>

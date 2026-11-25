@@ -9,7 +9,7 @@ const MENU = [
   { to: '/parceiros', rotulo: 'Profissionais Parceiros' },
 ]
 
-export function Marca({ tamanho = 40 }) {
+export function Marca({ tamanho = 36 }) {
   return (
     <span className="marca">
       <HolosLogo width={tamanho} height={tamanho} aria-hidden="true" />
@@ -63,7 +63,7 @@ export default function Layout() {
         <div className="v-container">
           <div className="v-rodape-grade">
             <div>
-              <Marca tamanho={36} />
+              <Marca tamanho={34} />
               <p className="v-rodape-lema">Direção para dentro.</p>
             </div>
             <nav className="v-rodape-links" aria-label="Links do rodapé">
