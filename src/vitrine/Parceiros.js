@@ -2,11 +2,33 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
+// Letra maiúscula no início de cada nome, mantendo "da", "de", "do", "e"... em minúsculas.
+const MINUSCULAS = ['da', 'das', 'de', 'do', 'dos', 'e', 'di', 'du', 'van', 'von']
+export function nomeProprio(texto) {
+  return texto
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLocaleLowerCase('pt-BR')
+    .split(' ')
+    .map((p, i) =>
+      i > 0 && MINUSCULAS.includes(p)
+        ? p
+        : p.replace(/(^|[-'’])(\p{L})/gu, (_, sep, letra) => sep + letra.toLocaleUpperCase('pt-BR'))
+    )
+    .join(' ')
+}
+
+// Cidade / estado: nomes com maiúscula e sigla do estado toda em maiúsculas (ex.: "Belo Horizonte / MG").
+function cidadeEstado(texto) {
+  return nomeProprio(texto).replace(/\b(\p{L}{2})$/u, (uf) => uf.toLocaleUpperCase('pt-BR'))
+}
+
 const VAZIO = {
   nome: '',
   email: '',
   whatsapp: '',
   profissao: '',
+  especializacao: '',
   registro: '',
   cidade: '',
   link_profissional: '',
@@ -42,12 +64,13 @@ export default function Parceiros() {
     }
     setEnviando(true)
     const { error } = await supabase.from('parceiros_interesse').insert({
-      nome: form.nome.trim(),
+      nome: nomeProprio(form.nome),
       email: form.email.trim(),
       whatsapp: form.whatsapp.trim() || null,
       profissao: form.profissao,
+      especializacao: form.especializacao.trim() || null,
       registro: form.registro.trim() || null,
-      cidade: form.cidade.trim() || null,
+      cidade: form.cidade.trim() ? cidadeEstado(form.cidade) : null,
       link_profissional: form.link_profissional.trim() || null,
       mensagem: form.mensagem.trim() || null,
       consentimento: true,
@@ -65,10 +88,10 @@ export default function Parceiros() {
     <section className="v-secao v-secao-topo">
       <div className="v-container v-duas-colunas v-parceiros">
         <div>
-          <p className="v-sobretitulo">Para psicólogos e psicanalistas</p>
+          <p className="v-sobretitulo">Para psicólogos, psicanalistas e terapeutas</p>
           <h1 className="v-titulo-pagina">Profissionais Parceiros Holos</h1>
           <p className="v-texto v-texto-destaque">
-            Estamos formando uma rede de psicólogos e psicanalistas que compartilham a visão da Holos: cuidar do ser
+            Estamos formando uma rede de psicólogos, psicanalistas e terapeutas que compartilham a visão da Holos: cuidar do ser
             humano por inteiro, com seriedade e respeito.
           </p>
           <p className="v-texto">
@@ -92,7 +115,7 @@ export default function Parceiros() {
             <form onSubmit={enviar} className="v-form" noValidate>
               <label>
                 Nome completo *
-                <input value={form.nome} onChange={(e) => campo('nome', e.target.value)} maxLength={150} autoComplete="name" required />
+                <input value={form.nome} onChange={(e) => campo('nome', e.target.value)} onBlur={() => form.nome && campo('nome', nomeProprio(form.nome))} autoCapitalize="words" maxLength={150} autoComplete="name" required />
               </label>
               <label>
                 E-mail *
@@ -109,15 +132,20 @@ export default function Parceiros() {
                   <option>Psicóloga(o)</option>
                   <option>Psicanalista</option>
                   <option>Psicóloga(o) e psicanalista</option>
+                  <option>Terapeuta</option>
                 </select>
               </label>
               <label>
-                Registro (CRP) ou formação em psicanálise
+                Especialização
+                <input value={form.especializacao} onChange={(e) => campo('especializacao', e.target.value)} maxLength={200} placeholder="Ex.: terapia cognitivo-comportamental, psicologia clínica, arteterapia" />
+              </label>
+              <label>
+                Registro (CRP) ou formação
                 <input value={form.registro} onChange={(e) => campo('registro', e.target.value)} maxLength={200} placeholder="Ex.: CRP 00/00000 ou instituição de formação" />
               </label>
               <label>
                 Cidade / estado
-                <input value={form.cidade} onChange={(e) => campo('cidade', e.target.value)} maxLength={120} />
+                <input value={form.cidade} onChange={(e) => campo('cidade', e.target.value)} onBlur={() => form.cidade && campo('cidade', cidadeEstado(form.cidade))} autoCapitalize="words" placeholder="Ex.: Belo Horizonte / MG" maxLength={120} />
               </label>
               <label>
                 Instagram ou site profissional

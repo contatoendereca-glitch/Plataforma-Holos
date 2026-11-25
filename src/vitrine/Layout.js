@@ -58,7 +58,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main>
+      <main className={pathname === '/' || pathname === '/cursos' ? '' : 'v-secundaria'}>
         <Outlet />
       </main>
 

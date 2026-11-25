@@ -454,3 +454,13 @@ a.v-selo-linha:hover { background: var(--creme); }
 
 .so-estreito { display: none; }
 @media (max-width: 900px) { .so-estreito { display: inline; } }
+
+/* Telas secundárias (curso, Sobre, Parceiros, Privacidade): textos em Source Sans 3.
+   Títulos seguem em Cormorant Garamond; menu, botões, selos e rótulos em Manrope. */
+.v-secundaria { font-family: 'Source Sans 3', 'Source Sans Pro', var(--interface); font-size: 17px; line-height: 1.6; }
+.v-secundaria .v-texto-destaque { font-family: 'Source Sans 3', 'Source Sans Pro', var(--interface); font-size: 20px; line-height: 1.5; color: var(--cafe); }
+.v-secundaria .v-pequeno { font-size: 15px; }
+.v-secundaria .v-form label { font-family: 'Source Sans 3', 'Source Sans Pro', var(--interface); font-size: 15px; font-weight: 600; }
+.v-secundaria .v-form input, .v-secundaria .v-form select, .v-secundaria .v-form textarea { font-family: 'Source Sans 3', 'Source Sans Pro', var(--interface); font-size: 17px; }
+.v-secundaria .v-sobretitulo, .v-secundaria .v-lista-titulo, .v-secundaria .v-selo, .v-secundaria .v-voltar,
+.v-secundaria .v-botao, .v-secundaria .v-link, .v-secundaria button { font-family: var(--interface); }

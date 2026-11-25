@@ -16,8 +16,8 @@ export default function Privacidade() {
 
         <h2 className="v-subtitulo">Formulário de Profissionais Parceiros</h2>
         <p className="v-texto">
-          Se você é profissional e preenche o formulário de parceria, guardamos nome, e-mail, WhatsApp, profissão,
-          registro ou formação, cidade, link profissional e a mensagem enviada. Usamos esses dados apenas para
+          Se você é psicóloga(o), psicanalista ou terapeuta e preenche o formulário de parceria, guardamos nome, e-mail, WhatsApp, profissão,
+          especialização, registro ou formação, cidade, link profissional e a mensagem enviada. Usamos esses dados apenas para
           conversar com você sobre a parceria. Eles não são vendidos nem compartilhados com terceiros.
         </p>
 
