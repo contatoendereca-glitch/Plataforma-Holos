@@ -464,3 +464,14 @@ a.v-selo-linha:hover { background: var(--creme); }
 .v-secundaria .v-form input, .v-secundaria .v-form select, .v-secundaria .v-form textarea { font-family: 'Source Sans 3', 'Source Sans Pro', var(--interface); font-size: 17px; }
 .v-secundaria .v-sobretitulo, .v-secundaria .v-lista-titulo, .v-secundaria .v-selo, .v-secundaria .v-voltar,
 .v-secundaria .v-botao, .v-secundaria .v-link, .v-secundaria button { font-family: var(--interface); }
+
+/* O Método Holos */
+.m-figura { margin: 32px auto 8px; max-width: 560px; }
+.m-figura img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--linha); }
+.m-movimentos { list-style: none; display: grid; gap: 16px; margin-bottom: 28px; }
+@media (min-width: 720px) { .m-movimentos { grid-template-columns: 1fr 1fr; } }
+.m-movimentos li { display: flex; gap: 16px; align-items: flex-start; padding: 20px; background: var(--creme); border: 1px solid var(--linha); border-radius: 10px; }
+.m-numero { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--dourado); display: grid; place-items: center; font-family: var(--titulo); font-size: 20px; font-weight: 600; color: var(--bronze); }
+.m-frente { font-family: var(--interface); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: var(--dourado-texto); }
+.m-verbo { font-family: var(--titulo); font-size: 28px; font-weight: 600; color: var(--cafe); line-height: 1.2; margin: 2px 0 6px; }
+.m-pergunta { font-style: italic; color: var(--texto-suave); }

@@ -232,9 +232,17 @@ export const METODOLOGIA = [
   'Certificado de conclusão de curso livre',
 ]
 
+// Método Holos: os 4 movimentos, cada um ligado a uma frente e a uma pergunta do diário.
+export const MOVIMENTOS = [
+  { verbo: 'Perceber', frente: 'Corpo', pergunta: 'O que meu corpo percebeu?' },
+  { verbo: 'Reconhecer', frente: 'Alma', pergunta: 'O que minha alma reconheceu?' },
+  { verbo: 'Discernir', frente: 'Espírito', pergunta: 'O que é coerente com o que acredito? (o que meu espírito ilumina?)' },
+  { verbo: 'Agir', frente: 'Integração', pergunta: 'Qual pequena ação posso realizar?' },
+]
+
 export const PERGUNTAS_DIARIO = [
   ['Corpo', 'O que meu corpo percebeu?'],
   ['Alma', 'O que minha alma reconheceu?'],
-  ['Espírito', 'O que meu espírito escolhe?'],
+  ['Espírito', 'O que é coerente com o que acredito? (o que meu espírito ilumina?)'],
   ['Integração', 'Qual pequena ação posso realizar?'],
 ]

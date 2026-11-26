@@ -8,6 +8,7 @@ import Catalogo from './vitrine/Catalogo'
 import CursoPagina from './vitrine/CursoPagina'
 import Parceiros from './vitrine/Parceiros'
 import Sobre from './vitrine/Sobre'
+import Metodo from './vitrine/Metodo'
 import Privacidade from './vitrine/Privacidade'
 import NaoEncontrada from './vitrine/NaoEncontrada'
 import './styles/vitrine.css'
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/cursos/:codigo" element={<CursoPagina />} />
           <Route path="/parceiros" element={<Parceiros />} />
           <Route path="/sobre" element={<Sobre />} />
+          <Route path="/metodo" element={<Metodo />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="/profissionais" element={<Navigate to="/parceiros" replace />} />

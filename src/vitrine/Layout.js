@@ -72,6 +72,7 @@ export default function Layout() {
             <nav className="v-rodape-links" aria-label="Links do rodapé">
               <Link to="/cursos">Cursos</Link>
               <Link to="/sobre">Sobre</Link>
+              <Link to="/metodo">O Método Holos</Link>
               <Link to="/parceiros">Profissionais Parceiros</Link>
               <Link to="/privacidade">Privacidade</Link>
               <a href="https://instagram.com/psi.fernandalima_" target="_blank" rel="noreferrer">Instagram</a>

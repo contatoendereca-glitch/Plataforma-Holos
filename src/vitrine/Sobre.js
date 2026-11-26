@@ -35,7 +35,7 @@ export default function Sobre() {
         <h2 className="v-subtitulo" id="lente-holos">A Lente Holos</h2>
         <p className="v-texto">
           A Lente Holos é a metodologia própria da plataforma. Cada curso olha para o seu tema pelas três frentes,
-          uma de cada vez: o que o corpo mostra, o que a alma reconhece e o que o espírito escolhe. Depois, reúne essas
+          uma de cada vez: o que o corpo percebe, o que a alma reconhece e o que o espírito discerne. Depois, reúne essas
           perspectivas numa direção prática para a vida.
         </p>
 
@@ -46,6 +46,10 @@ export default function Sobre() {
           <Link to="/cursos/i10">Holos Identidade: Quem Sou Eu?</Link> e{' '}
           <Link to="/cursos/i22">Introdução à Metodologia Holos</Link>, reunidos no catálogo em{' '}
           <Link to="/cursos?frente=integracao">Cursos de Integração</Link>.
+        </p>
+
+        <p className="v-texto">
+          Conheça os quatro movimentos em <Link to="/metodo">O Método Holos</Link>.
         </p>
 
         <div className="v-diario">
